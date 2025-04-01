@@ -36,7 +36,6 @@ func Connect() func() {
 	}
 }
 
-
 func EmailExists(email string) bool {
 	filter := bson.M{"email": email}
 	count, _ := Users.CountDocuments(context.TODO(), filter)
@@ -80,11 +79,11 @@ func Verify(username, email, password string) (string, bool) {
 	var user models.User
 	if err := Users.FindOne(context.TODO(), filter).Decode(&user); err != nil {
 		log.Printf("ERROR: Unable to fetch user with username %s\n", username)
-		return "",false
+		return "", false
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		log.Println(err)
-		return "",false
+		return "", false
 	}
 	log.Printf("LOG: User %s logged in\n", user.Username)
 	return user.Userid, true
