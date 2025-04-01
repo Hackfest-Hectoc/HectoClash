@@ -45,5 +45,5 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		JSONResponse(w, http.StatusUnauthorized, ErrInvalidCreds)
 		return
 	}
-	
-}
+	JSONResponse(w, http.StatusOK, LoggedIn)	
+

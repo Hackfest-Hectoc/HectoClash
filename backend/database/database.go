@@ -25,7 +25,8 @@ func Connect() func() {
 	if err != nil {
 		panic(err)
 	}
-	DB = Client.Database("TEST")
+
+	DB = Client.Database("test")
 	Users = DB.Collection("users")
 	Games = DB.Collection("games")
 	return func() {
@@ -35,87 +36,34 @@ func Connect() func() {
 	}
 }
 
-// Modify all this
-
-type UserRepository struct {
-	Collection *mongo.Collection
-}
-
-func (r *UserRepository) InsertUser(users *models.User) (interface{}, error) {
-	result, err := r.Collection.InsertOne(context.Background(), users)
-	if err != nil {
-		return nil, err
-	}
-	return result.InsertedID, nil
-}
-
-// func (r *UserRepository) FindEmployeeByID(empID string) (*models.User, error) {
-// 	var user models.User
-// 	err := r.Collection.FindOne(context.Background(), bson.M{"employee_id": empID}).Decode(&emp)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return &emp, nil
-// }
-
-func (r *UserRepository) FindAllUsers() ([]models.User, error) {
-	results, err := r.Collection.Find(context.Background(), bson.M{})
-	if err != nil {
-		return nil, err
-	}
-	var users []models.User
-	if err = results.All(context.Background(), &users); err != nil {
-		return nil, fmt.Errorf("results decode error: %s", err.Error())
-	}
-	return users, nil
-}
-
-func (r *UserRepository) UpdateUserByID(UseridID string, updateUser *models.User) (int64, error) {
-	result, err := r.Collection.UpdateOne(context.Background(), bson.M{"userid": UseridID}, bson.M{"$set": updateUser})
-	if err != nil {
-		return 0, err
-	}
-	return result.ModifiedCount, nil
-}
-
-func (r *UserRepository) DeleteUserByID(Userid string) (int64, error) {
-	result, err := r.Collection.DeleteOne(context.Background(), bson.M{"userid": Userid})
-	if err != nil {
-		return 0, err
-	}
-	return result.DeletedCount, nil
-}
 
 func EmailExists(email string) bool {
 	filter := bson.M{"email": email}
 	count, _ := Users.CountDocuments(context.TODO(), filter)
-	if count != 0 {
-		return true
-	}
-	return false
+	return count != 0
+
 }
 
 func UserExists(username string) bool {
 	filter := bson.M{"username": username}
 	count, _ := Users.CountDocuments(context.TODO(), filter)
-	if count == 0 {
-		return true
-	}
-	return false
+	return count != 0
 }
 
 func Register(username, password, email string) bool {
 	var user models.User
 	user.Username = username
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return false
 	}
 	user.Password = string(hashedPassword)
 	user.Email = email
-	user.Userid = uuid.New()
+
+	user.Userid = uuid.New().String()
 	result, err := Users.InsertOne(context.TODO(), user)
 	if err != nil {
+		log.Println(err)
 		return false
 	}
 	log.Println(result)
@@ -135,9 +83,9 @@ func Verify(username, email, password string) bool {
 		return false
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		log.Printf("ALERT: User %s tried to login with wrong password\n", username)
+		log.Println(err)
 		return false
 	}
-	log.Printf("LOG: User %s logged in\n", username)
+	log.Printf("LOG: User %s logged in\n", user.Username)
 	return true
 }

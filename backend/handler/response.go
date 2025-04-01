@@ -16,4 +16,5 @@ var (
 	ErrInvalidEmail = Response{"failure", "Invalid email address."}
 	ErrInvalidCreds = Response{"failure", "Invalid credentials."}
 	RegSuccess = Response{"success", "Registered Successfully."}
+	LoggedIn = Response{"success", "LoggedIn."}
 )
