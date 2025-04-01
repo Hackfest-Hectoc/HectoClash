@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -24,6 +25,7 @@ func Connect() func() {
 	if err != nil {
 		panic(err)
 	}
+
 	DB = Client.Database("test")
 	Users = DB.Collection("users")
 	Games = DB.Collection("games")
@@ -34,10 +36,12 @@ func Connect() func() {
 	}
 }
 
+
 func EmailExists(email string) bool {
 	filter := bson.M{"email": email}
 	count, _ := Users.CountDocuments(context.TODO(), filter)
 	return count != 0
+
 }
 
 func UserExists(username string) bool {
@@ -55,6 +59,7 @@ func Register(username, password, email string) bool {
 	}
 	user.Password = string(hashedPassword)
 	user.Email = email
+
 	user.Userid = uuid.New().String()
 	result, err := Users.InsertOne(context.TODO(), user)
 	if err != nil {

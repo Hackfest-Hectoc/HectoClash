@@ -46,4 +46,4 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	JSONResponse(w, http.StatusOK, LoggedIn)	
-}
+
