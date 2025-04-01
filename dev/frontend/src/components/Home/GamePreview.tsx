@@ -2,7 +2,7 @@ import * as React from "react";
 
 export const GamePreview: React.FC = () => {
     return (
-        <div className="relative h-[549px] w-[501px] max-lg:h-[440px] max-lg:w-[400px] max-md:h-[330px] max-md:w-[300px]">
+        <div className="relative h-[509px] w-[501px] max-lg:h-[440px] max-lg:w-[400px] max-md:h-[330px] max-md:w-[300px]">
             <img
                 src="https://cdn.builder.io/api/v1/image/assets/TEMP/c252629015bdcb5ff69024268ca95e06fd27001c"
                 className="absolute h-full rounded-[46px] w-full object-cover"

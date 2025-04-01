@@ -2,13 +2,13 @@ import * as React from "react";
 
 export const HeroSection: React.FC = () => {
   return (
-    <section className="flex-1 max-w-[520px] max-md:mb-16 max-md:text-center px-6 py-8 max-sm:px-4 max-sm:py-6">
-      <h1 className="mb-2.5 text-5xl font-bold text-white max-sm:text-4xl inline-block ">
+    <section className="flex-1 max-w-[500px] max-md:mb-16 max-md:text-center px-4 max-sm:px-2">
+      <h1 className="inline-block mb-2.5 text-5xl font-bold text-white max-sm:text-4xl">
         HectoClash
       </h1>
-      <div className="inline-block  mx-4  mt-8 h-1 bg-emerald-300 w-[171px] max-md:mx-auto max-md:mt-5 max-md:mb-8 max-sm:w-[120px]" />
+      <div className="inline-block h-1 ml-8 bg-emerald-300 w-[150px] max-md:mx-auto max-md:block max-md:mt-5 max-md:mb-8 max-sm:w-[120px]" />
       <div className="mb-10 text-7xl font-bold leading-tight text-white max-sm:text-5xl max-sm:leading-snug">
-        <span>Fast &nbsp;&nbsp;&nbsp; Paced</span>
+        <span>Fast &nbsp;&nbsp; Paced</span>
         <br />
         <span>
           <p>Mental Math</p>
