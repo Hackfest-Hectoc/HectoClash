@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"fmt"
+	// "fmt"
 	"log"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
