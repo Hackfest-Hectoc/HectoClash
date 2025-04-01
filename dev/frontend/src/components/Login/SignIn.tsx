@@ -9,12 +9,12 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 export default function SignIn() {
-  const Backend_Url=import.meta.env.Backend_Url
+  const Backend_Url = import.meta.env.Backend_Url
   const navigate = useNavigate()
   // State to manage form inputs
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
+    password: "",
   });
 
   // State to manage button text
@@ -45,6 +45,10 @@ export default function SignIn() {
     } catch (error) {
       console.error("Error signing in:", error);
       // Handle error (e.g., show an error message)
+      setFormData({
+        name: "",
+        password: "",
+      })
       setButtonText("Sign In");
     }
   };
@@ -70,20 +74,20 @@ export default function SignIn() {
               placeholder="Name"
               value={formData.name}
               onChange={handleChange} // Handle input changes
-              className="h-[45px] w-[400px] px-4 py-2 text-sm rounded-md border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="h-[45px] w-[380px] px-4 py-2 text-xl rounded-[9px] border-[3px] border-gray-700 border-width-2 bg-zinc-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
             />
             <FormInput
-              type="email"
-              name="email"
-              placeholder="Email id"
-              value={formData.email}
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
               onChange={handleChange} // Handle input changes
-              className="h-[45px] w-[400px] px-4 py-2 text-sm rounded-md border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="h-[45px] w-[380px] px-4 py-2 text-xl rounded-[9px] border-[3px] border-gray-700 border-width-2 bg-zinc-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
             />
             <button
               type="submit"
               onClick={handleSignIn} // Add the onClick handler here
-              className="mt-5 text-2xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-[none] border-b-green-600 h-[55px] text-black w-[481px] max-sm:w-full max-sm:max-w-[411px] hover:bg-green-600 transition-colors"
+              className="mt-5 text-2xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-[none] border-b-green-600 h-[55px] text-black w-[431px] max-sm:w-full max-sm:max-w-[411px] hover:bg-green-600 transition-colors"
             >
               {buttonText} {/* Dynamically display the button text */}
             </button>

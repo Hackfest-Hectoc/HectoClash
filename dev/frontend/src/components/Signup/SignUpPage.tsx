@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 
 export default function SignUpPage() {
-  const Backend_Url=import.meta.env.Backend_Url
+  const Backend_Url = import.meta.env.Backend_Url
   // State to manage form inputs
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -38,14 +38,20 @@ export default function SignUpPage() {
 
     try {
       // Send form data using Axios
-      const response = await axios.post(`${Backend_Url}/signup`, formData);
+      const response = await axios.post(`${Backend_Url}/apiregister`, formData);
       console.log("Response:", response.data);
 
       // Handle success (e.g., redirect or show a success message)
       setButtonText("Signed Up!");
-      navigate("/signin", { replace: true }); // Redirect to the "/welcome" page
+      navigate("/api/signin", { replace: true }); // Redirect to the "/welcome" page
     } catch (error) {
       console.error("Error signing up:", error);
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      })
       // Handle error (e.g., show an error message)
       setButtonText("Get Started");
     }
@@ -73,7 +79,7 @@ export default function SignUpPage() {
               placeholder="Name"
               value={formData.name}
               onChange={handleChange} // Handle input changes
-              className="h-[45px] w-[400px] px-4 py-2 text-sm rounded-md border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="h-[45px] w-[380px] px-4 py-2 text-xl rounded-[9px] border-[3px] border-gray-700 border-width-2 bg-zinc-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
             />
             <FormInput
               type="email"
@@ -81,7 +87,7 @@ export default function SignUpPage() {
               placeholder="Email id"
               value={formData.email}
               onChange={handleChange} // Handle input changes
-              className="h-[45px] w-[400px] px-4 py-2 text-sm rounded-md border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="h-[45px] w-[380px] px-4 py-2 text-xl rounded-[9px] border-[3px] border-gray-700 border-width-2 bg-zinc-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
             />
             <FormInput
               type="password"
@@ -89,7 +95,7 @@ export default function SignUpPage() {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange} // Handle input changes
-              className="h-[45px] w-[400px] px-4 py-2 text-sm rounded-md border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="h-[45px] w-[380px] px-4 py-2 text-xl rounded-[9px] border-[3px] border-gray-700 border-width-2 bg-zinc-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
             />
             <FormInput
               type="password"
@@ -97,12 +103,12 @@ export default function SignUpPage() {
               placeholder="Re-enter password"
               value={formData.confirmPassword}
               onChange={handleChange} // Handle input changes
-              className="h-[45px] w-[400px] px-4 py-2 text-sm rounded-md border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="h-[45px] w-[380px] px-4 py-2 text-xl rounded-[9px] border-[3px] border-gray-700 border-width-2 bg-zinc-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
             />
             <button
               type="submit"
               onClick={handleSignUp}
-              className="mt-5 text-2xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-[none] border-b-green-600 h-[55px] text-black w-[481px] max-sm:w-full max-sm:max-w-[411px] hover:bg-green-600 transition-colors"
+              className="mt-5 text-2xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-[none] border-b-green-600 h-[55px] text-black w-[431px] max-sm:w-full max-sm:max-w-[411px] hover:bg-green-600 transition-colors"
             >
               {buttonText}
             </button>

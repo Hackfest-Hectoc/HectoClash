@@ -1,7 +1,14 @@
 import * as React from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export const HeroSection: React.FC = () => {
+  const navigate=useNavigate();
+  const handleclick = ()=>{
+    navigate("/signin", { replace: false });
+  }
+
   return (
+
     <section className="flex-1 max-w-[500px] max-md:mb-16 max-md:text-center px-4 max-sm:px-2">
       <h1 className="inline-block mb-2.5 text-5xl font-bold text-white max-sm:text-4xl">
         HectoClash
@@ -19,7 +26,10 @@ export const HeroSection: React.FC = () => {
         A mental math game where Speed, Strategy, and Math Collide in
         Real-Time Battles!
       </p>
-      <button className="mt-5 text-2xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-[none] border-b-green-600 h-[55px] text-black w-[481px] max-sm:w-full max-sm:max-w-[411px] hover:bg-green-600 transition-colors">
+      <button 
+      onClick={handleclick}
+      className=" text-xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-[none] border-b-green-600 h-[55px] text-black w-[251px] max-sm:w-full max-sm:max-w-[201px] hover:bg-green-600 transition-colors"
+      >
         Login/Sign up
       </button>
     </section>
