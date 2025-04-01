@@ -15,6 +15,7 @@ var (
 	ErrInvalidPassword = Response{"failure", "Password length must be between 8 and 72 characters."}
 	ErrInvalidEmail = Response{"failure", "Invalid email address."}
 	ErrInvalidCreds = Response{"failure", "Invalid credentials."}
+	ErrInLogin = Response{"failure", "Error while logging in. Please contact admin."}
 	RegSuccess = Response{"success", "Registered Successfully."}
 	LoggedIn = Response{"success", "LoggedIn."}
 )

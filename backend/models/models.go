@@ -5,4 +5,4 @@ type User struct {
 	Userid   string `bson:"userid"`
 	Email    string `bson:"email"`
 	Password string `bson:"password"`
-
+}

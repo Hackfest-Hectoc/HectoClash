@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/mail"
+	"time"
 
+	"github.com/Hackfest-Hectoc/HectoClash/backend/config"
 	"github.com/Hackfest-Hectoc/HectoClash/backend/database"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // User struct to unpack username, password and email from request body.
@@ -29,7 +32,7 @@ func validate(user User) (Response, bool) {
 	}
 	if len(user.Username) > 20 || len(user.Username) < 4 {
 		return ErrInvalidUsername, false
-	} 
+	}
 	if len(user.Password) < 8 || len(user.Password) > 72 {
 		return ErrInvalidPassword, false
 	}
@@ -43,4 +46,18 @@ func validate(user User) (Response, bool) {
 		return ErrEmailExists, false
 	}
 	return Response{}, true
+}
+
+func createToken(uid string) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
+		jwt.MapClaims{
+			"uid": uid,
+			"exp": time.Now().Add(time.Hour * 24).Unix(),
+		},
+	)
+	tokenString, err := token.SignedString([]byte(config.JWT_SECRET))
+	if err != nil {
+		return "", err
+	}
+	return tokenString, nil
 }

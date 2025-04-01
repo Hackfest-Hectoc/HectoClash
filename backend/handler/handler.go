@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/Hackfest-Hectoc/HectoClash/backend/database"
 )
@@ -41,9 +42,29 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if len(user.Email) > 0 {
 		user.Username = ""
 	}
-	if verifyUser := database.Verify(user.Username, user.Email, user.Password); !verifyUser {
+
+	uid, verifyUser := database.Verify(user.Username, user.Email, user.Password)
+	if !verifyUser {
 		JSONResponse(w, http.StatusUnauthorized, ErrInvalidCreds)
 		return
 	}
-	JSONResponse(w, http.StatusOK, LoggedIn)	
 
+	jwtString, err := createToken(uid)
+	if err != nil {
+		JSONResponse(w, http.StatusInternalServerError, ErrInLogin)
+		return
+	}
+
+	log.Println(jwtString)
+	cookie := http.Cookie{
+		Name: "token",
+		Value: jwtString,
+		Expires: time.Now().Add(24 * time.Hour),
+		HttpOnly: true,
+		Secure: false,
+		SameSite: http.SameSiteLaxMode,
+		Path: "/api",
+	}
+	http.SetCookie(w, &cookie)
+	JSONResponse(w, http.StatusOK, LoggedIn)
+}
