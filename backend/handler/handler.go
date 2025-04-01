@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-
 	"github.com/Hackfest-Hectoc/HectoClash/backend/database"
 )
 
@@ -47,3 +46,4 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	JSONResponse(w, http.StatusOK, LoggedIn)	
 
+}
