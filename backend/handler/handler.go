@@ -1,12 +1,11 @@
 package handler
 
 import (
-	_ "log"
+	"log"
 	"net/http"
+	"strings"
 
-	_ "github.com/Hackfest-Hectoc/HectoClash/backend/database"
-	_ "github.com/Hackfest-Hectoc/HectoClash/backend/models"
-	_ "github.com/google/uuid"
+	"github.com/Hackfest-Hectoc/HectoClash/backend/database"
 )
 
 func Register(w http.ResponseWriter, r *http.Request) {
@@ -16,17 +15,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user User
-	user.Username = r.FormValue("username")
+	user.Username = strings.TrimSpace(r.FormValue("username"))
 	user.Password = r.FormValue("password")
-	user.Email = r.FormValue("email")
+	user.Email = strings.ToLower(strings.TrimSpace(r.FormValue("email")))
 
-	if check := anyEmpty(user); check {
-		JSONResponse(w, http.StatusBadRequest, ErrEmptyFields)
-		return
-	}
-
-	if message, ok := validate(user); !ok {
-		JSONResponse(w, http.StatusBadRequest, message)
+	if validationErr, ok := validate(user); !ok {
+		JSONResponse(w, http.StatusBadRequest, validationErr)
 		return
 	}
 
@@ -35,9 +29,21 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	JSONResponse(w, http.StatusOK, RegSuccess)
+	log.Printf("USER: %s REGISTERED\n", user.Username)
+	JSONResponse(w, http.StatusCreated, RegSuccess)
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
+	var user User
+	user.Username = r.FormValue("username")
+	user.Password = r.FormValue("password")
+	user.Email = r.FormValue("email")
+	if len(user.Email) > 0 {
+		user.Username = ""
+	}
+	if verifyUser := database.Verify(user.Username, user.Email, user.Password); !verifyUser {
+		JSONResponse(w, http.StatusUnauthorized, ErrInvalidCreds)
+		return
+	}
 	
 }

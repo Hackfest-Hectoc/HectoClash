@@ -14,5 +14,6 @@ var (
 	ErrInvalidUsername = Response{"failure", "Username length must be between 4 and 20 characters."}
 	ErrInvalidPassword = Response{"failure", "Password length must be between 8 and 72 characters."}
 	ErrInvalidEmail = Response{"failure", "Invalid email address."}
+	ErrInvalidCreds = Response{"failure", "Invalid credentials."}
 	RegSuccess = Response{"success", "Registered Successfully."}
 )
