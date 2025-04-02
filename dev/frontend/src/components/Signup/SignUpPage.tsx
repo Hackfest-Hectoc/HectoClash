@@ -13,7 +13,7 @@ export default function SignUpPage() {
   // State to manage form inputs
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -38,7 +38,7 @@ export default function SignUpPage() {
 
     try {
       // Send form data using Axios
-      const response = await axios.post(`${Backend_Url}/signup`, formData);
+      const response = await axios.post(`http://34.100.248.83:8000/api/register`, formData);
       console.log("Response:", response.data);
 
       // Handle success (e.g., redirect or show a success message)
@@ -69,9 +69,9 @@ export default function SignUpPage() {
           <form className="flex flex-col gap-5 items-center max-sm:w-full">
             <FormInput
               type="text"
-              name="name"
+              name="username"
               placeholder="Name"
-              value={formData.name}
+              value={formData.username}
               onChange={handleChange} // Handle input changes
               className="h-[45px] w-[400px] px-4 py-2 text-sm rounded-md border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
             />

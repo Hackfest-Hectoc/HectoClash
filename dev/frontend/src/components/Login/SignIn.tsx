@@ -13,8 +13,8 @@ export default function SignIn() {
   const navigate = useNavigate()
   // State to manage form inputs
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    username: "",
+    password: "",
   });
 
   // State to manage button text
@@ -36,7 +36,7 @@ export default function SignIn() {
 
     try {
       // Send form data using Axios
-      const response = await axios.post(`${Backend_Url}/signin`, formData);
+      const response = await axios.post(`http://34.100.248.83:8000/api/login`, formData, {withCredentials: true});
       console.log("Response:", response.data);
 
       // Handle success (e.g., redirect or show a success message)
@@ -66,17 +66,17 @@ export default function SignIn() {
           <form className="mt-12 flex flex-col gap-5 items-center max-sm:w-full">
             <FormInput
               type="text"
-              name="name"
+              name="username"
               placeholder="Name"
-              value={formData.name}
+              value={formData.username}
               onChange={handleChange} // Handle input changes
               className="h-[45px] w-[400px] px-4 py-2 text-sm rounded-md border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
             />
             <FormInput
-              type="email"
-              name="email"
+              type="password"
+              name="password"
               placeholder="Email id"
-              value={formData.email}
+              value={formData.password}
               onChange={handleChange} // Handle input changes
               className="h-[45px] w-[400px] px-4 py-2 text-sm rounded-md border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
             />

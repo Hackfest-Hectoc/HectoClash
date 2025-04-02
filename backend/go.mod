@@ -1,6 +1,6 @@
 module github.com/Hackfest-Hectoc/HectoClash/backend
 
-go 1.24.1
+go 1.24
 
 require (
 	github.com/gofiber/contrib/websocket v1.3.3
