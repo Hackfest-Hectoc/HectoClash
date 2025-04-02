@@ -59,7 +59,7 @@ export default function SignIn() {
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Raleway:wght@400&display=swap"
         rel="stylesheet"
       />
-      <main className="relative p-5 mx-auto w-full max-w-none min-h-screen bg-zinc-900 max-md:max-w-[991px] max-sm:max-w-screen-sm bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)]">
+      <main className="relative p-5 mx-auto w-full max-w-none min-h-screen bg-zinc-900 overflow-hidden max-sm:max-w-screen-sm bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)]">
         <Logo />
         <SphereBackground />
 
@@ -74,7 +74,7 @@ export default function SignIn() {
               placeholder="Name"
               value={formData.name}
               onChange={handleChange} // Handle input changes
-              className="h-[45px] w-[380px] px-4 py-2 text-xl rounded-[9px] border-[3px] border-gray-700 border-width-2 bg-zinc-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="h-[45px] max-w-[380px] w-full px-4 py-2 text-xl rounded-[9px] border-[3px] border-gray-700 border-width-2 bg-zinc-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
             />
             <FormInput
               type="password"
@@ -82,7 +82,7 @@ export default function SignIn() {
               placeholder="Password"
               value={formData.password}
               onChange={handleChange} // Handle input changes
-              className="h-[45px] w-[380px] px-4 py-2 text-xl rounded-[9px] border-[3px] border-gray-700 border-width-2 bg-zinc-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
+              className="h-[45px] max-w-[380px] w-full px-4 py-2 text-xl rounded-[9px] border-[3px] border-gray-700 border-width-2 bg-zinc-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
             />
             <button
               type="submit"

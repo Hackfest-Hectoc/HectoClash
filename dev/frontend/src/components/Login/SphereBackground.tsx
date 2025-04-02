@@ -2,7 +2,7 @@ import React from "react";
 
 export const SphereBackground: React.FC = () => {
   return (
-    <>
+    <div className="w-screen overflow-hidden ">
       <div>
         <svg
           width="256"
@@ -69,6 +69,6 @@ export const SphereBackground: React.FC = () => {
           </defs>
         </svg>
       </div>
-    </>
+    </div>
   );
 };
