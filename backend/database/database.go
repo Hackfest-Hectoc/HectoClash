@@ -40,7 +40,6 @@ func EmailExists(email string) bool {
 	filter := bson.M{"email": email}
 	count, _ := Users.CountDocuments(context.TODO(), filter)
 	return count != 0
-
 }
 
 func UserExists(username string) bool {
@@ -49,23 +48,17 @@ func UserExists(username string) bool {
 	return count != 0
 }
 
-func Register(username, password, email string) bool {
-	var user models.User
-	user.Username = username
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
+func Register(user *models.User) bool {
+	if hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost); err != nil {
 		return false
+	} else {
+		user.Password = string(hashedPassword)
 	}
-	user.Password = string(hashedPassword)
-	user.Email = email
-
 	user.Userid = uuid.New().String()
-	result, err := Users.InsertOne(context.TODO(), user)
-	if err != nil {
+	if _, err := Users.InsertOne(context.TODO(), user); err != nil {
 		log.Println(err)
 		return false
 	}
-	log.Println(result)
 	return true
 }
 

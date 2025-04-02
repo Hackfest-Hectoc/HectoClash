@@ -2,69 +2,66 @@ package handler
 
 import (
 	"log"
-	"net/http"
 	"strings"
 	"time"
 
 	"github.com/Hackfest-Hectoc/HectoClash/backend/database"
+	"github.com/Hackfest-Hectoc/HectoClash/backend/models"
+	"github.com/gofiber/fiber/v2"
 )
 
-func Register(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		JSONResponse(w, http.StatusBadRequest, ErrBadFormData)
-		return
+func Register(c *fiber.Ctx) error {
+	user := new(models.User)
+	if err := c.BodyParser(user); err != nil {
+		log.Println(err)
+		return c.Status(fiber.ErrBadRequest.Code).JSON(ErrBadFormData)
 	}
-
-	var user User
-	user.Username = strings.TrimSpace(r.FormValue("username"))
-	user.Password = r.FormValue("password")
-	user.Email = strings.ToLower(strings.TrimSpace(r.FormValue("email")))
+	user.Username = strings.TrimSpace(user.Username)
+	user.Email = strings.ToLower(strings.TrimSpace(user.Email))
 
 	if validationErr, ok := validate(user); !ok {
-		JSONResponse(w, http.StatusBadRequest, validationErr)
-		return
+		return c.Status(fiber.StatusBadRequest).JSON(validationErr)
 	}
 
-	if check := database.Register(user.Username, user.Password, user.Email); !check {
-		JSONResponse(w, http.StatusInternalServerError, ErrRegFailure)
-		return
+	if check := database.Register(user); !check {
+		return c.Status(fiber.StatusInternalServerError).JSON(ErrRegFailure)
 	}
 
-	log.Printf("USER: %s REGISTERED\n", user.Username)
-	JSONResponse(w, http.StatusCreated, RegSuccess)
+	log.Printf("LOG: User %s Registered.\n", user.Username)
+	return c.Status(fiber.StatusCreated).JSON(RegSuccess)
+
 }
 
-func Login(w http.ResponseWriter, r *http.Request) {
-	var user User
-	user.Username = r.FormValue("username")
-	user.Password = r.FormValue("password")
-	user.Email = r.FormValue("email")
+func Login(c *fiber.Ctx) error {
+	user := new(models.User)
+
+	if err := c.BodyParser(user); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(ErrBadFormData)
+	}
+
 	if len(user.Email) > 0 {
 		user.Username = ""
 	}
 
 	uid, verifyUser := database.Verify(user.Username, user.Email, user.Password)
+
 	if !verifyUser {
-		JSONResponse(w, http.StatusUnauthorized, ErrInvalidCreds)
-		return
+		return c.Status(fiber.StatusUnauthorized).JSON(ErrInvalidCreds)
 	}
 
-	jwtString, err := createToken(uid)
-	if err != nil {
-		JSONResponse(w, http.StatusInternalServerError, ErrInLogin)
-		return
+	if jwtString, err := createToken(uid); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(ErrInLogin)
+	} else {
+		cookie := &fiber.Cookie{
+			Name:     "token",
+			Value:    jwtString,
+			Expires:  time.Now().Add(24 * time.Hour),
+			HTTPOnly: true,
+			Secure:   false,
+			SameSite: fiber.CookieSameSiteLaxMode,
+			Path:     "/api",
+		}
+		c.Cookie(cookie)
+		return c.Status(fiber.StatusOK).JSON(LoggedIn)
 	}
-
-	log.Println(jwtString)
-	cookie := http.Cookie{
-		Name: "token",
-		Value: jwtString,
-		Expires: time.Now().Add(24 * time.Hour),
-		HttpOnly: true,
-		Secure: false,
-		SameSite: http.SameSiteLaxMode,
-		Path: "/api",
-	}
-	http.SetCookie(w, &cookie)
-	JSONResponse(w, http.StatusOK, LoggedIn)
 }

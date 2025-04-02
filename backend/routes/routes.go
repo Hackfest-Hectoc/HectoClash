@@ -1,12 +1,11 @@
-package routes 
+package routes
 
 import (
 	"github.com/Hackfest-Hectoc/HectoClash/backend/handler"
-
-	"github.com/gorilla/mux"
+	"github.com/gofiber/fiber/v2"
 )
 
-func SetupRoutes(r *mux.Router) {
-	r.HandleFunc("/api/register", handler.Register).Methods("POST")
-	r.HandleFunc("/api/login", handler.Login).Methods("POST")
+func SetupRoutes(app *fiber.App) {
+	app.Post("/api/register", handler.Register).Name("Register")
+	app.Post("/api/login", handler.Login).Name("Login")
 }
