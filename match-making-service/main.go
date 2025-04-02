@@ -56,11 +56,14 @@ func MatchMakingService() {
 			rdb.Set(ctx, first, gid, time.Minute*10)
 			rdb.Set(ctx, second, gid, time.Minute*10)
 			rdb.Set(ctx, gid, gameState, time.Minute*10)
+			log.Println("GID ", gid, "SET")
+			log.Println("USERS: ", first, second, " RUNNING UNDER GID: ", gid)
 		}
 	}
 }
 
 func main() {
 	Connect()
+	log.Println("CONNECTION SUCCESSFULL")
 	MatchMakingService()
 }
