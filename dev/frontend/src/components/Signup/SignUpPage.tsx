@@ -67,7 +67,7 @@ export default function SignUpPage() {
         <Logo />
         <SphereBackground />
 
-        <section className="mx-auto mt-52 mb-0 text-center max-w-[517px] max-md:mt-36 max-sm:px-5 max-sm:py-0 max-sm:mt-24">
+        <section className="mx-auto mt-52 mb-0 text-center max-w-[517px]  max-sm:px-5 max-sm:py-0 ">
           <h2 className="mb-2.5 text-xl text-white">Let's get you started</h2>
           <h1 className="mb-10 text-5xl font-bold text-white max-sm:text-4xl">
             Create an Account

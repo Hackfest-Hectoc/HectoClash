@@ -63,7 +63,7 @@ export default function SignIn() {
         <Logo />
         <SphereBackground />
 
-        <section className="mx-auto mt-56 mb-0 text-center max-w-[517px] max-md:mt-36 max-sm:px-5 max-sm:py-0 max-sm:mt-24">
+        <section className="mx-auto mt-56 mb-0 text-center max-w-[517px]  max-sm:px-5 max-sm:py-0 ">
           <h1 className="mb-10 text-5xl font-bold text-white max-sm:text-4xl">
             Sign In.
           </h1>
