@@ -5,9 +5,9 @@ export default function Gameselect() {
         <div className="w-full h-screen overflow-hidden bg-black border border-solid border-black">
             <div className="h-screen bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)] bg-cover bg-center flex flex-col items-center">
                 {/* Header */}
-                <div className="w-full h-[88px] bg-black border border-solid border-[#818181] flex flex-wrap items-center justify-between px-12">
+                <div className="w-full h-[88px] bg-zinc-900 border border-solid border-[#818181] flex flex-wrap items-center justify-between px-12">
                     {/* Left Section: Logo and Viewers */}
-                    <div className="flex items-center gap-4 mb-2 max-sm:mb-0">
+                    <div className="flex items-center gap-4 max-sm:mb-0">
                         <img
                             className="w-12 h-12 object-cover"
                             alt="Logo"
@@ -19,7 +19,7 @@ export default function Gameselect() {
                     </div>
 
                     {/* Right Section: Players */}
-                    <div className="flex items-center gap-4 mb-2 max-sm:mb-0">
+                    <div className="flex items-center gap-4  max-sm:mb-0">
                         <img
                             className="w-12 h-12 object-cover"
                             alt="Players"
