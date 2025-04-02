@@ -12,3 +12,5 @@ func getEnv(key string, fallback string) string {
 
 var MONGO_URI = getEnv("MONGO_URI", "mongodb+srv://abcd:saxsux@hectoc.phprdaf.mongodb.net/")
 var JWT_SECRET = getEnv("JWT_SECRET", "bondissogood")
+
+var BACKEND_URI = getEnv("BACKEND_URI", ":8000")
