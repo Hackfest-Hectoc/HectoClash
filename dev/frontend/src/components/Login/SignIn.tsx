@@ -59,7 +59,7 @@ export default function SignIn() {
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Raleway:wght@400&display=swap"
         rel="stylesheet"
       />
-      <main className="relative p-5 mx-auto w-full max-w-none min-h-screen bg-zinc-900 max-md:max-w-[991px] max-sm:max-w-screen-sm">
+      <main className="relative p-5 mx-auto w-full max-w-none min-h-screen bg-zinc-900 max-md:max-w-[991px] max-sm:max-w-screen-sm bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)]">
         <Logo />
         <SphereBackground />
 

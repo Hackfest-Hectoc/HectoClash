@@ -3,7 +3,6 @@ import * as React from "react";
 import { Logo } from "./Logo";
 import { HeroSection } from "./HeroSection";
 import { GamePreview } from "./GamePreview";
-
 const Home: React.FC = () => {
   React.useEffect(() => {
     // Load Google Fonts
@@ -19,7 +18,7 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <main className="relative p-6 w-full min-h-screen bg-zinc-900">
+    <main className="relative p-6 w-full min-h-screen bg-zinc-900 bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)]">
       <header className="relative">
         <Logo />
       </header>
