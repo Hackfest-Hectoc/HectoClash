@@ -64,6 +64,6 @@ func MatchMakingService() {
 
 func main() {
 	Connect()
-	log.Println("CONNECTION SUCCESSFULL")
+	log.Println("CONNECTION SUCCESSFULL!")
 	MatchMakingService()
 }
