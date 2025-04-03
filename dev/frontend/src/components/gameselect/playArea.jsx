@@ -186,13 +186,13 @@ export default function MathGame() {
       <div className="flex gap-12 mt-12">
         <div className="text-center">
           <span className="bg-red-600 px-3 py-1 rounded-full text-lg font-bold">A</span>
-          <div className="mt-2">{player1[username]}</div>
-          <div className="text-yellow-400">{gameData[player1points]}</div>
+          <div className="mt-2">{player1.username}</div>
+          <div className="text-yellow-400">{gameData.player1points}</div>
         </div>
         <div className="text-center">
           <span className="bg-gray-500 px-3 py-1 rounded-full text-lg font-bold">G</span>
-          <div className="mt-2">{player2[username]}</div>
-          <div className="text-yellow-400">{gameData[player2points]}</div>
+          <div className="mt-2">{player2.username}</div>
+          <div className="text-yellow-400">{gameData.player2points}</div>
         </div>
       </div>
 
