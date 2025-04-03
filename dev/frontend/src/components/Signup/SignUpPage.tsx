@@ -38,7 +38,7 @@ export default function SignUpPage() {
 
     try {
       // Send form data using Axios
-      const response = await axios.post(`${Backend_Url}/apiregister`, formData);
+      const response = await axios.post(`${Backend_Url}/api/register`, formData, {withCredentials : true});
       console.log("Response:", response.data);
 
       // Handle success (e.g., redirect or show a success message)

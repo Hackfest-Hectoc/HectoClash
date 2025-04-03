@@ -36,7 +36,7 @@ export default function SignIn() {
 
     try {
       // Send form data using Axios
-      const response = await axios.post(`${Backend_Url}/signin`, formData);
+      const response = await axios.post(`${Backend_Url}/signin`, formData, {withCredentials: true});
       console.log("Response:", response.data);
 
       // Handle success (e.g., redirect or show a success message)
