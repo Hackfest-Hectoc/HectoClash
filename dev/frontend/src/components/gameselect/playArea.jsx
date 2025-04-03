@@ -29,7 +29,7 @@ export default function MathGame() {
   // Establish WebSocket connection
   useEffect(() => {
     // Replace with your WebSocket URL (e.g., "ws://localhost:3000/ws")
-    ws.current = new WebSocket("ws://localhost:3000/ws");
+    ws.current = new WebSocket(`${import.meta.env.Websocket_Url}/ws`);
 
     ws.current.onopen = () => {
       console.log("WebSocket connection opened");
