@@ -8,8 +8,8 @@ export default function MathGame() {
   const [expression, setExpression] = useState("");
   const [gameData, setGameData] = useState({
     string: "",
-    "player-one": "",
-    "player-two": "",
+    player_one: "",
+    player_two: "",
     status: "",
     player1expression: "",
     player2expression: "",
@@ -134,12 +134,12 @@ export default function MathGame() {
   const gameInit = async (data: any) => {
     try {
       const response1 = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/player/${data["player-one"]}`
+        `${import.meta.env.VITE_BACKEND_URL}/player/${data.player_one}`
       );
       setPlayer1(response1.data);
 
       const response2 = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/player/${data["player-two"]}`
+        `${import.meta.env.VITE_BACKEND_URL}/player/${data.player_two}`
       );
       setPlayer2(response2.data);
     } catch (error) {
