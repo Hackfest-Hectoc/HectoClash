@@ -1,6 +1,49 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Gameselect() {
+    const [viewers, setViewers] = useState(0);
+    const [players, setPlayers] = useState(0);
+    const [playerData, setPlayerData] = useState({ name: "Ayush12", rating: 2044 });
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchViewers();
+            fetchPlayers();
+        }, 1000);
+
+        fetchPlayerData(); // Fetch player data once on mount
+
+        return () => clearInterval(interval); // Cleanup interval on component unmount
+    }, []);
+
+    const fetchViewers = async () => {
+        try {
+            const response = await axios.get("/api/viewers"); // Replace with actual API endpoint
+            setViewers(response.data.viewers);
+        } catch (error) {
+            console.error("Error fetching viewers:", error);
+        }
+    };
+
+    const fetchPlayers = async () => {
+        try {
+            const response = await axios.get("/api/players"); // Replace with actual API endpoint
+            setPlayers(response.data.players);
+        } catch (error) {
+            console.error("Error fetching players:", error);
+        }
+    };
+
+    const fetchPlayerData = async () => {
+        try {
+            const response = await axios.get("/api/player/ayush12"); // Replace with actual API endpoint
+            setPlayerData({ name: response.data.name, rating: response.data.rating });
+        } catch (error) {
+            console.error("Error fetching player data:", error);
+        }
+    };
+
     return (
         <div className="w-full h-screen overflow-hidden bg-black border border-solid border-black">
             <div className="h-screen bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)] bg-cover bg-center flex flex-col items-center">
@@ -14,7 +57,7 @@ export default function Gameselect() {
                             src="https://c.animaapp.com/fOFXwWPz/img/image-5@2x.png"
                         />
                         <p className="text-white text-sm">
-                            Viewers: <span className="font-bold">2044</span>
+                            Viewers: <span className="font-bold">{viewers}</span>
                         </p>
                     </div>
 
@@ -26,7 +69,7 @@ export default function Gameselect() {
                             src="https://c.animaapp.com/fOFXwWPz/img/image-11@2x.png"
                         />
                         <p className="text-white text-sm">
-                            Players: <span className="font-bold">2044</span>
+                            Players: <span className="font-bold">{players}</span>
                         </p>
                     </div>
 
@@ -38,7 +81,8 @@ export default function Gameselect() {
                             src="https://c.animaapp.com/fOFXwWPz/img/image-5@2x.png"
                         />
                         <p className="text-white text-sm">
-                            <span>Ayush12</span> <br /><span className="font-bold">2044</span>
+                            <span>{playerData.name}</span> <br />
+                            <span className="font-bold">{playerData.rating}</span>
                         </p>
                     </div>
                 </div>
