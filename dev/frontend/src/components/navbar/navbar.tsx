@@ -4,10 +4,10 @@ import { useLocation } from "react-router-dom";
 export default function Navbar() {
   const location = useLocation();
   return (
-    <div className="bg-zinc-900 flex flex-row justify-center w-full max-w-[250px] max-xl:max-w-[200px] max-md:max-w-[60px] ">
-      <div className="bg-zinc-900 w-[262px] h-auto min-h-screen relative max-md:w-full">
+    <div className=" flex  bg-green-900/20  backdrop-blur-sm flex-row justify-center shadow-md w-full max-w-[220px] max-xl:max-w-[200px] max-md:max-w-[60px] border-r-4 border-rounded-md border-green-900/20 rounded-r-md">
+      <div className="w-[262px] h-auto min-h-screen relative max-md:w-full">
         {/* Logo */}
-        <div className="flex items-center gap-2 p-4">
+        <div className="flex items-center h-[88px] gap-2 p-4">
           <img
             className="w-[31px] h-[37px] object-cover"
             alt="Logo"
@@ -20,7 +20,7 @@ export default function Navbar() {
         </div>
 
         {/* Navigation Items */}
-        <nav className="mt-10 space-y-4">
+        <nav className="mt-20 space-y-4">
           {/* Home */}
           <NavItem
             label="Home"
@@ -53,14 +53,14 @@ export default function Navbar() {
 const NavItem = ({ label, icon, isActive }: { label: string; icon: string; isActive?: boolean }) => {
     return (
       <div
-        className={`flex items-center gap-4 px-4 py-2 rounded-r-lg ${
+        className={`flex items-center gap-4 mr-2 px-4 py-2 rounded-r-lg ${
           isActive
-            ? "bg-gradient-to-r from-[#69c8c1] to-[#a9f99e]"
-            : "bg-gray-700 hover:bg-gradient-to-r hover:from-[#69c8c1] hover:to-[#a9f99e]"
+            ? "bg-gradient-to-r from-[#69c8c1] to-[#a9f99e] text-black"
+            : "bg-gray-700 text-white hover:bg-gradient-to-r hover:from-[#69c8c1] hover:to-[#a9f99e] hover:text-black"
         } transition-all duration-300`}
       >
         <img className="w-5 h-5" alt={label} src={icon} />
-        <span className="text-lg font-semibold text-white  max-md:hidden ">
+        <span className="text-lg font-semibold   max-md:hidden ">
           {label}
         </span>
       </div>

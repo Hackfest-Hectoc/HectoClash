@@ -3,13 +3,15 @@ import { Bolt, MessageSquare, Clock } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
+import Header from "./header";
 
 export default function MathGame() {
   const [expression, setExpression] = useState("");
   const [gameData, setGameData] = useState({
     string: "",
-    player_one: "",
-    player_two: "",
+    player_one: "Anubhab",
+    player_two: "Sagnik",
     status: "",
     player1expression: "",
     player2expression: "",
@@ -21,15 +23,14 @@ export default function MathGame() {
   });
   const [round, setRound] = useState(1);
   const [question, setQuestion] = useState("666666");
-  const [player1, setPlayer1] = useState({ username: "", rating: 0 });
-  const [player2, setPlayer2] = useState({ username: "", rating: 0 });
+  const [player1, setPlayer1] = useState({ username: "Anubhab", rating: 0 });
+  const [player2, setPlayer2] = useState({ username: "Sagnik", rating: 0 });
   const ws = useRef<WebSocket | null>(null);
-  const submitButtonRef = useRef<HTMLButtonElement | null>(null); // Submit button reference
+  const submitButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  // Establish WebSocket connection
   useEffect(() => {
     ws.current = new WebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}/ws`);
-
+    let interval: ReturnType<typeof setInterval>;
     ws.current.onopen = () => {
       console.log("WebSocket connection opened");
     };
@@ -39,10 +40,12 @@ export default function MathGame() {
       try {
         const data = JSON.parse(event.data);
 
-        // Check the message title and update state accordingly
         if (data.title === "gameInit") {
           setGameData(data.message);
           gameInit(data.message);
+          interval = setInterval(() => {
+            getGameData();
+          }, 100);
         }
         if (data.title === "question") {
           setQuestion(data.message.question);
@@ -67,22 +70,20 @@ export default function MathGame() {
       console.log("WebSocket connection closed");
     };
 
-    // Cleanup on component unmount
     return () => {
       if (ws.current) ws.current.close();
+      clearInterval(interval);
     };
   }, []);
 
-  // Fetch game data every 0.1 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      getGameData();
-    }, 100); // 0.1 seconds
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     getGameData();
+  //   }, 100);
 
-    return () => clearInterval(interval); // Cleanup interval on component unmount
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
-  // Change background color of the submit button
   const changeBackgroundColor = (color: string) => {
     if (submitButtonRef.current) {
       submitButtonRef.current.classList.remove("bg-green-300");
@@ -90,7 +91,6 @@ export default function MathGame() {
     }
   };
 
-  // Reset background color of the submit button
   const resetBackgroundColor = (color: string) => {
     if (submitButtonRef.current) {
       submitButtonRef.current.classList.remove(color);
@@ -98,7 +98,6 @@ export default function MathGame() {
     }
   };
 
-  // Handle submit response
   const handleSubmitResponse = (response: boolean) => {
     if (response) {
       changeBackgroundColor("bg-green-500");
@@ -112,7 +111,6 @@ export default function MathGame() {
     }
   };
 
-  // Handler to send the expression
   const handleSubmit = () => {
     if (submitButtonRef.current) {
       submitButtonRef.current.disabled = true;
@@ -130,7 +128,6 @@ export default function MathGame() {
     }
   };
 
-  // Initialize game data
   const gameInit = async (data: any) => {
     try {
       const response1 = await axios.get(
@@ -147,7 +144,6 @@ export default function MathGame() {
     }
   };
 
-  // Handle expression changes
   const handleExpressionChange = (newExpression: string) => {
     setExpression(newExpression);
 
@@ -163,7 +159,6 @@ export default function MathGame() {
     }
   };
 
-  // Fetch game data
   const getGameData = () => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       const submitPayload = {
@@ -178,71 +173,189 @@ export default function MathGame() {
   };
 
   return (
-    <div
-      className="relative w-full h-screen flex flex-col items-center justify-center text-white"
-      style={{
-        backgroundImage: "url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)",
-        backgroundSize: "cover",
-      }}
-    >
-      {/* Top bar */}
-      <div className="absolute top-4 left-4 flex items-center gap-2">
-        <Bolt className="text-green-500" />
-        <MessageSquare className="text-yellow-500" />
-        <span className="text-lg font-bold">{round}</span>
-      </div>
-      <div className="absolute top-4 right-4 flex items-center gap-4">
-        <div className="flex items-center gap-2">
-          <span className="bg-red-600 text-white px-2 py-1 rounded-full text-sm">A</span>
-          <span>{player1.username}</span>
-          <span className="text-yellow-400">{player1.rating}</span>
-        </div>
-        <Clock className="text-green-500" />
-      </div>
+    <div className="bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)] bg-cover bg-center overflow-hidden h-screen">
+      <img
+        src="https://cdn.builder.io/api/v1/image/assets/TEMP/ca9e464b944ab22129b2e7d0da766b29064e4364"
+        alt="Company Logo"
+        className="absolute left-6 h-[37px] top-[25px] w-[31px] z-10"
+      />
+      <Header></Header>
 
-      {/* Players */}
-      <div className="flex gap-12 mt-12">
-        <div className="text-center">
-          <span className="bg-red-600 px-3 py-1 rounded-full text-lg font-bold">A</span>
-          <div className="mt-2">{player1.username}</div>
-          <div className="text-yellow-400">{gameData.player1points}</div>
-        </div>
-        <div className="text-center">
-          <span className="bg-gray-500 px-3 py-1 rounded-full text-lg font-bold">G</span>
-          <div className="mt-2">{player2.username}</div>
-          <div className="text-yellow-400">{gameData.player2points}</div>
-        </div>
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className=" w-full h-screen flex flex-col items-center  text-white "
+      >
 
-      {/* Number sequence */}
-      <div className="flex gap-4 text-3xl mt-12">
-        {question.split("").map((char, i) => (
-          <span key={i} className="flex items-center">
-            {char}
-            <span className="w-6 h-6 border-2 border-gray mt-1 ml-2"></span>
-          </span>
-        ))}
-      </div>
+        {/* Main Content */}
+        <main className="mt-16 sm:mt-20 w-full max-w-4xl flex flex-col gap-8 items-center px-4">
 
-      {/* Input */}
-      <div className="mt-8 w-1/2 flex flex-col items-center justify-center">
-        <Input
-          className="text-center w-[420px] p-2 text-lg border-2 focus:ring-green-400 focus:ring-0 bg-black/50"
-          placeholder="Type your Expression.."
-          value={expression}
-          onChange={(e) => handleExpressionChange(e.target.value)}
-        />
-        <div className="p-3">
-          <Button
-            ref={submitButtonRef}
-            onClick={handleSubmit}
-            variant="outline"
-            className="mt-5 text-2xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-[none] border-b-green-600 h-[55px] text-black w-[431px] max-sm:w-full max-sm:max-w-[411px] hover:bg-green-600 transition-colors"
+          {/* Round Display */}
+          <motion.div
+            className=" top-32 sm:top-40 transform -translate-x-1/2 text-center mb-2"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 260,
+              damping: 20
+            }}
           >
-            Submit
-          </Button>
-        </div>
-      </div>
+            <span className="text-4xl sm:text-6xl font-bold text-green-300 shadow-lg">
+              Round <span className="text-white">{round}</span>
+            </span>
+          </motion.div>
+          {/* Score Board */}
+          <div className="flex flex-wrap gap-6 sm:gap-12 w-[1400px] justify-around mb-6 mt-8 sm:mb-8">
+            <motion.div
+              className=""
+              initial={{ x: -100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              {/* Player Initial */}
+              <motion.span
+                className="bg-green-600 px-4 py-2 rounded-full text-2xl font-bold shadow-lg relative top-[-10px]"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {player1.username[0]}
+              </motion.span>
+
+              {/* Player Details */}
+              <div className="inline-block">
+                <motion.div
+                  className="px-2 text-l font-semibold"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  {player1.username}
+                </motion.div>
+                <motion.div
+                  className="px-2 text-l text-green-400 font-semibold"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  {player1.rating}
+                </motion.div>
+              </div>
+
+              {/* Player Points */}
+              <motion.div
+                className=" pb-1 text-green-400 border-[3px] border-green-300 text-center text-3xl font-bold mt-2 bg-green-300/30 rounded-md px-4 w-[140px]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                {gameData.player1points} 
+              </motion.div>
+            </motion.div>
+                      {/* Question Display */}
+          <div className="flex flex-wrap gap-3 sm:gap-4 bg-transparent text-2xl sm:text-3xl mt-[40px] mb-6 sm:mb-8 justify-center ">
+            <AnimatePresence>
+              {question.split("").map((char, i) => (
+                <motion.span
+                  key={i}
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -20, opacity: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="flex items-center justify-center w-12 h-12 bg-transparent rounded-lg shadow-md border-[3px] border"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </AnimatePresence>
+          </div>
+            <motion.div
+              className=""
+              initial={{ x: -100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              {/* Player Initial */}
+              <motion.span
+                className="bg-red-600 px-4 py-2 rounded-full text-2xl font-bold shadow-lg relative top-[-10px] "
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {player2.username[0]}
+              </motion.span>
+
+              {/* Player Details */}
+              <div className="inline-block">
+                <motion.div
+                  className="px-2 text-l font-semibold"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  {player2.username}
+                </motion.div>
+                <motion.div
+                  className="px-2 text-l text-red-400 font-semibold"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  {player2.rating}
+                </motion.div>
+              </div>
+
+              {/* Player Points */}
+              <motion.div
+                className=" pb-1 text-red-400 text-center text-3xl font-bold mt-2 bg-red-300/30 rounded-md px-4 w-[140px] border-[3px] border-red-400 "
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                {gameData.player1points} 
+              </motion.div>
+            </motion.div>
+
+          </div>
+
+
+
+
+          {/* Input Section */}
+          <motion.div
+            className="w-full max-w-md flex flex-col justify-center items-center align-center"
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <motion.div
+              className="w-full"
+              whileHover={{ scale: 1.02 }}
+            >
+              <Input
+                className="text-center w-full p-2 h-[45px] sm:p-3   border-[3px]  rounded-lg focus:ring-2 focus:ring-green-400 focus:border-[0px] text-white text-2xl"
+                placeholder="Type your Expression..."
+                value={expression}
+                onChange={(e) => handleExpressionChange(e.target.value)}
+              />
+            </motion.div>
+            <motion.div
+              className="w-full mt-4 pt-4 sm:mt-5 flex justify-center"
+              whileHover={{ scale: 1.02 }}
+            >
+              <Button
+                ref={submitButtonRef}
+                onClick={handleSubmit}
+                variant="outline"
+                className="text-base sm:text-2xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-[none] border-b-green-600 mt-12 h-[45px] sm:h-[55px] text-black w-full max-w-[381px] hover:bg-green-600 transition-colors"
+              >
+                Submit
+              </Button>
+            </motion.div>
+          </motion.div>
+        </main>
+      </motion.div>
     </div>
   );
 }
+
