@@ -75,7 +75,7 @@ export default function SignIn() {
             <FormInput
               type="password"
               name="password"
-              placeholder="Email id"
+              placeholder="password"
               value={formData.password}
               onChange={handleChange} // Handle input changes
               className="h-[45px] w-[400px] px-4 py-2 text-sm rounded-md border border-gray-700 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"

@@ -8,6 +8,9 @@ import (
 	"math/rand"
 	"strconv"
 	"time"
+	"math/rand"
+	"strconv"
+	"encoding/json"
 
 	"github.com/Hackfest-Hectoc/HectoClash/match-making-service/models"
 	"github.com/google/uuid"
@@ -38,6 +41,7 @@ func MatchMakingService() {
 		}
 		if count > 1 {
 			log.Println(count)
+			log.Println(count)
 			topTwo, err := rdb.ZPopMax(ctx, QUEUE_KEY, 2).Result()
 			if err == redis.Nil {
 				continue
@@ -53,6 +57,7 @@ func MatchMakingService() {
 			// If client does not use their gid within 60 seconds
 			// they will automatically be removed from the database
 			var gameState models.Game
+			var GameClient models.GameClient
 			var GameClient models.GameClient
 
 			gameState.ID = gid
@@ -75,10 +80,12 @@ func MatchMakingService() {
 			gamestatejson, _ := json.Marshal(gameState)
 			gameclientjson, _ := json.Marshal(GameClient)
 
-			rdb.Set(ctx, gid, string(gamestatejson), time.Minute*10)
-			rdb.Set(ctx, gid+"gameclient", string(gameclientjson), time.Minute*10)
+
+			rdb.Set(ctx, gid,gamestatejson, time.Minute*10)
+			rdb.Set(ctx, gid+"gameclient", gameclientjson, time.Minute*10)
 			rdb.Set(ctx, first, gid, time.Minute*10)
 			rdb.Set(ctx, second, gid, time.Minute*10)
+
 
 			log.Println("GID ", gid, "SET")
 			log.Println("USERS: ", first, second, " RUNNING UNDER GID: ", gid)
@@ -89,7 +96,7 @@ func MatchMakingService() {
 func GenerateHectoc(count int) []string {
 	rand.Seed(time.Now().UnixNano()) // Seed to ensure randomness
 	var results []string
-	for j := 0; j < count; j++ {
+	for j:=0 ; j<count ; j++{
 		var result string
 		for i := 0; i < 6; i++ {
 			digit := rand.Intn(9) + 1 // Random number between 1 and 9

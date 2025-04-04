@@ -38,7 +38,7 @@ export default function SignUpPage() {
 
     try {
       // Send form data using Axios
-      const response = await axios.post(`http://34.100.248.83:8000/api/register`, formData);
+      const response = await axios.post(`http://34.100.248.83:8000/api/register`, formData, {withCredentials :true});
       console.log("Response:", response.data);
 
       // Handle success (e.g., redirect or show a success message)
