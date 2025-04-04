@@ -3,14 +3,10 @@ package main
 import (
 	"context"
 	"encoding/json"
-	_ "encoding/json"
 	"log"
 	"math/rand"
 	"strconv"
 	"time"
-	"math/rand"
-	"strconv"
-	"encoding/json"
 
 	"github.com/Hackfest-Hectoc/HectoClash/match-making-service/models"
 	"github.com/google/uuid"
@@ -57,7 +53,6 @@ func MatchMakingService() {
 			// If client does not use their gid within 60 seconds
 			// they will automatically be removed from the database
 			var gameState models.Game
-			var GameClient models.GameClient
 			var GameClient models.GameClient
 
 			gameState.ID = gid

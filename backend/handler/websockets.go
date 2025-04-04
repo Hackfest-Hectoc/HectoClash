@@ -7,13 +7,11 @@ import (
 	"time"
 
 	"github.com/Hackfest-Hectoc/HectoClash/backend/models"
-	"github.com/Hackfest-Hectoc/HectoClash/backend/models"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/redis/go-redis/v9"
 )
 
 var rdb *redis.Client
-var ctx = context.TODO()
 var ctx = context.TODO()
 
 const (
@@ -37,7 +35,6 @@ func MangeGame(){
 
 func PublishMessage(gid string, message resp) error {
 	msg, _ := json.Marshal(message)
-	err := rdb.Publish(ctx, gid, msg).Err()
 	err := rdb.Publish(ctx, gid, msg).Err()
 	if err != nil {
 		return err
@@ -136,7 +133,6 @@ func WebSocketHandler(c *websocket.Conn) {
 	}
 
 	pubsub := rdb.Subscribe(ctx, gid)
-	pubsub := rdb.Subscribe(ctx, gid)
 	defer pubsub.Close()
 	defer rdb.Set(ctx, uid,"", time.Minute*10)
 	go SubscribeToChannel(pubsub, c)
@@ -151,7 +147,6 @@ func WebSocketHandler(c *websocket.Conn) {
 			log.Println(err)
 			log.Println("ERROR: Unable to ReadJSON object from socket.")
 			continue
-			return
 		}
 
 		log.Println(message)
@@ -170,13 +165,4 @@ func WebSocketHandler(c *websocket.Conn) {
 			return
 		}
 	}
-}
-
-func gameInit(){
-
-	c.WriteJSON(resp{"gameInit", ReadKey(gid+"gameclient")})
-	log.Println("sent game init")
-	log.Println(GetGameObject(gid))
-	c.WriteJSON(resp{"question1", GetGameObject(gid).Questions[0]})
-	
 }

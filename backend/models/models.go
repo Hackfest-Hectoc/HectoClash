@@ -27,11 +27,7 @@ type Round struct {
 // }
 
 type Game struct {
-<<<<<<< HEAD
 	ID                    string   `json:"gid"`
-=======
-	ID                    string   `json:"string"`
->>>>>>> 19f1885 ( alloworogin fix)
 	Playerone             string   `json:"player-one"`
 	Playertwo             string   `json:"player-two"`
 	Status                string   `json:"status"`
@@ -45,7 +41,6 @@ type Game struct {
 	Player2Points         int64    `json:"player2points"`
 	Questions             []string `json:"questions"`
 	NoofRounds            int64    `json:"noofrounds"`
-<<<<<<< HEAD
 }
 
 type GameClient struct {
@@ -66,6 +61,3 @@ type Response struct {
 	Topic   string `json:"topic"`
 	Message any    `json:"message"`
 }
-=======
-}
->>>>>>> 19f1885 ( alloworogin fix)
