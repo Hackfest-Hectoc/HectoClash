@@ -6,6 +6,12 @@ type User struct {
 	Email    string `bson:"email"`
 	Password string `bson:"password"`
 	Games    []Game `bson:"games"`
+	Rating   int64  `bson:"rating"`
+}
+
+type UserDetails struct {
+	Username string `bson:"username"`
+	Rating   int64  `bson:"rating"`
 }
 
 type Challenge struct {

@@ -35,7 +35,17 @@ func Connect() func() {
 		}
 	}
 }
+func GetUserFromID(id string) models.UserDetails{
+	var user models.UserDetails
+	filter := bson.M{"userid": id}
+	err := Users.FindOne(context.TODO(), filter).Decode(&user)
 
+	if err!=nil{
+		log.Println("Could not fetch user data from mongo OR user does not exist")
+		return models.UserDetails{}
+	}
+	return user
+}
 func EmailExists(email string) bool {
 	filter := bson.M{"email": email}
 	count, _ := Users.CountDocuments(context.TODO(), filter)
@@ -55,6 +65,7 @@ func Register(user *models.User) bool {
 		user.Password = string(hashedPassword)
 	}
 	user.Userid = uuid.New().String()
+	user.Rating = 800
 	if _, err := Users.InsertOne(context.TODO(), user); err != nil {
 		log.Println(err)
 		return false
