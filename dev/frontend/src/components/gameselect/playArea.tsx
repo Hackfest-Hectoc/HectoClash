@@ -206,7 +206,7 @@ export default function MathGame() {
             </span>
           </motion.div>
           {/* Score Board */}
-          <div className="flex flex-wrap gap-6 sm:gap-12 w-[1400px] justify-around mb-6 mt-8 sm:mb-8">
+          <div className="flex flex-wrap gap-6 sm:gap-12 w-[1000px] justify-around">
             <motion.div
               className=""
               initial={{ x: -100, opacity: 0 }}
@@ -253,7 +253,7 @@ export default function MathGame() {
               </motion.div>
             </motion.div>
                       {/* Question Display */}
-          <div className="flex flex-wrap gap-3 sm:gap-4 bg-transparent text-2xl sm:text-3xl mt-[40px] mb-6 sm:mb-8 justify-center ">
+          <div className="flex flex-wrap gap-3 sm:gap-4 bg-transparent text-2xl sm:text-3xl mt-[140px] mb-6 sm:mb-8 justify-center ">
             <AnimatePresence>
               {question.split("").map((char, i) => (
                 <motion.span
@@ -333,14 +333,14 @@ export default function MathGame() {
               whileHover={{ scale: 1.02 }}
             >
               <Input
-                className="text-center w-full p-2 h-[45px] sm:p-3   border-[3px]  rounded-lg focus:ring-2 focus:ring-green-400 focus:border-[0px] text-white text-2xl"
+                className="text-center w-full  h-[45px]    border-[3px]  rounded-lg focus:ring-2 focus:ring-green-400 focus:border-[0px] text-white text-2xl"
                 placeholder="Type your Expression..."
                 value={expression}
                 onChange={(e) => handleExpressionChange(e.target.value)}
               />
             </motion.div>
             <motion.div
-              className="w-full mt-4 pt-4 sm:mt-5 flex justify-center"
+              className="w-full   flex justify-center"
               whileHover={{ scale: 1.02 }}
             >
               <Button
