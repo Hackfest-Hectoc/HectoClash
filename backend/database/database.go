@@ -175,3 +175,38 @@ func Verify(username, email, password string) (string, bool) {
 	log.Printf("LOG: User %s logged in\n", user.Username)
 	return user.Userid, true
 }
+
+func AddGameToPlayer(uid, gid string) {
+	filter := bson.M{"userid": uid}
+	var data models.User
+	err := Users.FindOne(context.TODO(), filter).Decode(&data)
+	if err != nil {
+		log.Println("Unable to find user ", uid)
+		log.Println(err)
+	}
+	data.Games = append(data.Games, gid)
+
+	_, err = Users.UpdateOne(context.TODO(), filter, bson.M{"$set":bson.M{"games":data.Games}})
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+type custom struct {
+	Player1name string `bson:"player1name" json:"player1name"`
+	Player2name string `bson:"player2name" json:"player2name"`
+	v any
+}
+
+func AddGameRecord(game *models.Game) {
+	var user models.User
+	Users.FindOne(context.TODO(), bson.M{"userid":game.Playerone}).Decode(&user)
+	game.Player1name = user.Username
+	Users.FindOne(context.TODO(), bson.M{"userid":game.Playertwo})
+	game.Player2name = user.Username
+
+	_, err := Games.InsertOne(context.TODO(), game)
+	if err != nil {
+		log.Println("Unable to add Game record to database...")
+	}
+}

@@ -23,6 +23,7 @@ func Register(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(validationErr)
 	}
 
+	user.Games = []string{}
 	if check := database.Register(user); !check {
 		return c.Status(fiber.StatusInternalServerError).JSON(ErrRegFailure)
 	}

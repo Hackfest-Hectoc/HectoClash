@@ -52,7 +52,6 @@ func MatchMakingService() {
 			// If client does not use their gid within 60 seconds
 			// they will automatically be removed from the database
 			var gameState models.Game
-			var GameClient models.GameClient
 
 			gameState.ID = gid
 			gameState.Playerone = first
@@ -62,18 +61,9 @@ func MatchMakingService() {
 			gameState.Player2CurrRound = 1
 			gameState.Questions = GenerateHectoc(5)
 			gameState.NoofRounds = 5
-			GameClient.ID = gid
-			GameClient.Playerone = first
-			GameClient.Playertwo = second
-			GameClient.Status = "starting"
-			GameClient.Player1CurrRound = 1
-			GameClient.Player2CurrRound = 1
-			GameClient.NoofRounds = 5
 			gamestatejson, _ := json.Marshal(gameState)
-			gameclientjson, _ := json.Marshal(GameClient)
 
 			rdb.Set(ctx, gid,gamestatejson, time.Minute*10)
-			rdb.Set(ctx, gid+"gameclient", gameclientjson, time.Minute*10)
 			rdb.Set(ctx, first, gid, time.Minute*10)
 			rdb.Set(ctx, second, gid, time.Minute*10)
 

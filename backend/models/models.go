@@ -1,12 +1,12 @@
 package models
 
 type User struct {
-	Username string `bson:"username"`
-	Userid   string `bson:"userid"`
-	Email    string `bson:"email"`
-	Password string `bson:"password"`
-	Games    []Game `bson:"games"`
-	Rating   int64  `bson:"rating"`
+	Username string   `bson:"username"`
+	Userid   string   `bson:"userid"`
+	Email    string   `bson:"email"`
+	Password string   `bson:"password"`
+	Games    []string `bson:"games"`
+	Rating   int64    `bson:"rating"`
 }
 
 type UserDetails struct {
@@ -39,6 +39,8 @@ type GameClient struct {
 	ID                   string   `json:"gid"`
 	Playerone            string   `json:"player_one"`
 	Playertwo            string   `json:"player_two"`
+	Player1name          string   `json:"player1name"`
+	Player2name          string   `json:"player2name"`
 	Status               string   `json:"status"`
 	Winner               string   `json:"winner"`
 	Player1Expression    string   `json:"player1expression"`
@@ -61,6 +63,8 @@ type Game struct {
 	ID                   string   `json:"gid"`
 	Playerone            string   `json:"player_one"`
 	Playertwo            string   `json:"player_two"`
+	Player1name          string   `json:"player1name"`
+	Player2name          string   `json:"player2name"`
 	Status               string   `json:"status"`
 	Winner               string   `json:"winner"`
 	Player1Expression    string   `json:"player1expression"`
