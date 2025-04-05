@@ -1,4 +1,4 @@
-"use client"
+import SomeModal from "./modalforspec"
 
 import { useState, useEffect, useRef } from "react"
 import { Input } from "../ui/input"
@@ -6,37 +6,40 @@ import { motion, AnimatePresence } from "framer-motion"
 import Header from "./header"
 import axios from "axios"
 import { CheckCircle2, Circle, Lock, HelpCircle, Trophy, Zap, Clock, User } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 
 
 export default function Spectator() {
   const [expression, setExpression] = useState("")
+  const [showModal, setShowModal] = useState(false)
   const [gameData, setGameData] = useState({
-    "gid":                  "game123",
-    "player_one":           "player123",
-    "player_two":           "player456",
-    "status":               "status",
-    "player1expression":    "",
-    "player2expression":    "",
-    "player1solves":        ["0", "0", "0", "0", "0"],
-    "player2solves":        ["0", "0", "0", "0", "0"],
-    "player1questions":     ["0", "0", "0", "0", "0"],
-    "player2questions":     ["0", "0", "0", "0", "0"],
-    "player1curround":      1,
-    "player2curround":      4,
-    "player1points":        0,
-    "player2points":        0,
+    "gid": "",
+    "player_one": "",
+    "player_two": "",
+    "status": "status",
+    "player1expression": "",
+    "player2expression": "",
+    "player1solves": ["0", "0", "0", "0", "0"],
+    "player2solves": ["0", "0", "0", "0", "0"],
+    "player1questions": ["0", "0", "0", "0", "0"],
+    "player2questions": ["0", "0", "0", "0", "0"],
+    "player1curround": 1,
+    "player2curround": 4,
+    "player1points": 0,
+    "player2points": 0,
     "player1ratingchanges": 0,
     "player2ratingchanges": 0,
-    "noofrounds":           5,
-})
-  const [player1, setPlayer1] = useState({ uid:"",username: "Anubhab", rating: 0 })
-  const [player2, setPlayer2] = useState({ uid:"",username: "Sagnik", rating: 0 })
+    "noofrounds": 5,
+    "winner": ""
+  })
+  const [player1, setPlayer1] = useState({ uid: "", username: "Anubhab", rating: 0 })
+  const [player2, setPlayer2] = useState({ uid: "", username: "Sagnik", rating: 0 })
   const ws = useRef<WebSocket | null>(null)
   const submitButtonRef = useRef<HTMLButtonElement | null>(null)
 
 
-  function getCookie(name : string) {
+  function getCookie(name: string) {
     const cookieValue = document.cookie
       .split('; ')
       .find(row => row.startsWith(name + '='))
@@ -44,7 +47,7 @@ export default function Spectator() {
 
     return cookieValue ? decodeURIComponent(cookieValue) : "";
   }
-  let  uid = getCookie("uid")
+  let uid = getCookie("uid")
 
 
   useEffect(() => {
@@ -63,6 +66,9 @@ export default function Spectator() {
 
         if (data.title === "gameData") {
           setGameData(data.message)
+          if (data.message.status !== "") {
+            setShowModal(true)
+          }
         }
       } catch (err) {
         console.error("Error parsing WebSocket message", err)
@@ -89,7 +95,7 @@ export default function Spectator() {
   }
 
 
-  const getSymbol = (roundIndex: number , currentRound: number) => {
+  const getSymbol = (roundIndex: number, currentRound: number) => {
     if (roundIndex < currentRound) {
       return <CheckCircle2 className="text-green-500" size={20} />
     } else if (roundIndex === currentRound) {
@@ -183,13 +189,22 @@ export default function Spectator() {
       </div>
     </motion.div>
   )
-
+  const navigate = useNavigate()
   return (
+
     <div className="bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)] bg-cover bg-center  flex flex-col h-screen  overflow-y-auto">
       <img
         src="https://cdn.builder.io/api/v1/image/assets/TEMP/ca9e464b944ab22129b2e7d0da766b29064e4364"
         alt="Logo"
         className="absolute left-6 h-[37px] top-[18px] w-[31px] z-10"
+      />
+      <SomeModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        player1={{ username: player1.username, rating: player1.rating, uid: player1.uid, ratingChanges: gameData.player1ratingchanges }}
+        player2={{ username: player2.username, rating: player2.rating, uid: player2.uid, ratingChanges: gameData.player2ratingchanges }}
+        winner={gameData.winner}
+        navigate={navigate}
       />
       <Header />
 
@@ -261,26 +276,26 @@ export default function Spectator() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`grid grid-cols-[1fr_1fr_1fr] gap-4 items-center p-3 ${index === gameData.player1curround-1
-                        ? "bg-green-900/20 border-l-4 border-l-green-500"
-                        : index < gameData.player1curround-1
-                          ? "bg-black/40"
-                          : "bg-black/20"
+                    className={`grid grid-cols-[1fr_1fr_1fr] gap-4 items-center p-3 ${index === gameData.player1curround - 1
+                      ? "bg-green-900/20 border-l-4 border-l-green-500"
+                      : index < gameData.player1curround - 1
+                        ? "bg-black/40"
+                        : "bg-black/20"
                       }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 flex items-center justify-center">{getSymbol(index,gameData.player1curround-1)}</div>
+                      <div className="w-6 h-6 flex items-center justify-center">{getSymbol(index, gameData.player1curround - 1)}</div>
                       <span className="font-medium text-white">{index + 1}</span>
                     </div>
 
                     <div className="flex items-center gap-2 ml-1">
                       <span className="font-mono text-green-100 ">
-                        {index <= gameData.player1curround-1 ? round : "------"}
+                        {index <= gameData.player1curround - 1 ? round : "------"}
                       </span>
                     </div>
 
                     <div>
-                      {index < gameData.player1curround-1 ? (
+                      {index < gameData.player1curround - 1 ? (
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
@@ -352,18 +367,18 @@ export default function Spectator() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`grid grid-cols-[1fr_1fr_1fr] gap-4 items-center p-3 ${index === gameData.player2curround-1
-                        ? "bg-red-900/20 border-l-4 border-l-red-500"
-                        : index < gameData.player2curround-1
-                          ? "bg-black/40"
-                          : "bg-black/20"
+                    className={`grid grid-cols-[1fr_1fr_1fr] gap-4 items-center p-3 ${index === gameData.player2curround - 1
+                      ? "bg-red-900/20 border-l-4 border-l-red-500"
+                      : index < gameData.player2curround - 1
+                        ? "bg-black/40"
+                        : "bg-black/20"
                       }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 flex items-center justify-center">
-                        {index < gameData.player2curround-1 ? (
+                        {index < gameData.player2curround - 1 ? (
                           <CheckCircle2 className="text-red-500" size={20} />
-                        ) : index === gameData.player2curround-1 ? (
+                        ) : index === gameData.player2curround - 1 ? (
                           <Circle className="text-white animate-pulse" size={20} />
                         ) : (
                           <Lock className="text-white" size={20} />
@@ -374,12 +389,12 @@ export default function Spectator() {
 
                     <div className="flex items-center gap-2 ml-1">
                       <span className="font-mono text-red-100">
-                        {index <= gameData.player2curround-1 ? round : "------"}
+                        {index <= gameData.player2curround - 1 ? round : "------"}
                       </span>
                     </div>
 
                     <div>
-                      {index < gameData.player2curround-1 ? (
+                      {index < gameData.player2curround - 1 ? (
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
