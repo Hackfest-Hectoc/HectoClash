@@ -8,7 +8,7 @@ import GameSelect from './components/gameselect/gameselect';
 import MathGame from './components/gameselect/playArea';
 import Spectator from './components/gameselect/spectator';
 import LeaderBoard from './components/gameselect/leaderBoard';
-import Test from './components/gameselect/card';
+import Test from './components/gameselect/test';
 function App() {
   return (
     <Router>
@@ -18,7 +18,7 @@ function App() {
         <Route path='/signin' element={<SignIn />}/>
         <Route path='/' element={<Home/>}/>
         <Route path='/home' element={<GameSelect/>}/>
-        <Route path='/MathGame' element={<MathGame/>}/>
+        <Route path='/gamearea' element={<MathGame/>}/>
         <Route path='/Spectator' element={<Spectator/>}/>
         <Route path='/leaderboard' element={<LeaderBoard/>}/>
         <Route path='/test' element={<Test/>}/>

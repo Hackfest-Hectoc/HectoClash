@@ -12,7 +12,6 @@ import toast from "react-hot-toast"
 
 export default function MathGame() {
   // Game state
-
   let uid = ""
   const [expression, setExpression] = useState("")
   const [gameData, setGameData] = useState({
@@ -51,11 +50,11 @@ export default function MathGame() {
 
     return cookieValue ? decodeURIComponent(cookieValue) : "";
   }
-  uid = getCookie("uid")
+
   // Initialize WebSocket connection and game data
   useEffect(() => {
-
-    ws.current = new WebSocket(`ws://localhost:8000/ws`)
+    uid = getCookie("uid")
+    ws.current = new WebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}/ws`)
     let interval: ReturnType<typeof setInterval>
 
     ws.current.onopen = () => {
@@ -63,11 +62,11 @@ export default function MathGame() {
     }
 
     ws.current.onmessage = (event) => {
+      console.log("Received:", event.data)
       try {
         const data = JSON.parse(event.data)
-        console.log("data ",data)
-        if (data.title === "gameInit") {
 
+        if (data.title === "gameInit") {
           setGameData(data.message)
           gameInit(data.message)
           interval = setInterval(() => {
@@ -96,7 +95,6 @@ export default function MathGame() {
         }
       } catch (error) {
         console.error("Error parsing message:", error)
-        toast.error("Error parsing message")
       }
     }
 
@@ -159,19 +157,17 @@ export default function MathGame() {
       console.log("Sent message:", submitPayload)
     } else {
       console.error("WebSocket is not open.")
+      toast.error("WebSocket is not open.")
     }
   }
 
   const gameInit = async (data: any) => {
     try {
-      const response1 = await axios.get(`http://localhost:8000/api/player/${data.player_one}`)
+      const response1 = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/player/${data.player_one}`)
       setPlayer1(response1.data)
 
-      const response2 = await axios.get(`http://localhost:8000/api/player/${data.player_two}`)
+      const response2 = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/player/${data.player_two}`)
       setPlayer2(response2.data)
-      console.log(data.player_one)
-      console.log(data.player_two)
-      console.log(uid)
     } catch (error) {
       console.error("Error fetching player data:", error)
     }
@@ -401,7 +397,6 @@ export default function MathGame() {
               </div>
 
               <div className="flex flex-col gap-1 max-h-[25vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-green-500 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-green-500 [&::-webkit-scrollbar]:hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-transparent ">
-
                 {(uid == player1.uid ? gameData.player1questions : gameData.player2questions).map((somedata, index) => (
                   <motion.div
                     key={index}
@@ -428,14 +423,13 @@ export default function MathGame() {
                     </div>
 
                     <div>
-
                       {index < round ? (
                         <motion.div
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           className="flex items-center gap-2"
                         >
-                          <span className="font-mono text-green-100 ml-2">{uid == player1.uid ? gameData.player1solves[index] : gameData.player2solves[index]}</span>
+                          <span className="font-mono text-green-100 ml-2">{uid == player1.uid ? gameData.player1solves[index-1] : gameData.player2solves[index-1]}</span>
                         </motion.div>
                       ) : (
                         <span className="font-mono text-gray-400">------</span>

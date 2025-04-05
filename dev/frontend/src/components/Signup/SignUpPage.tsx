@@ -45,7 +45,7 @@ export default function SignUpPage() {
       // Handle success (e.g., redirect or show a success message)
       toast.success("Successfully signed up! 🎉");
       setButtonText("Signed Up!");
-      navigate("/api/signin", { replace: true }); // Redirect to the "/welcome" page
+      navigate("/signin", { replace: true }); // Redirect to the "/welcome" page
     } catch (error) {
       console.error("Error signing up:", error);
       if(!formData.name){
