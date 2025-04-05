@@ -6,6 +6,7 @@ import { Logo } from "./Logo";
 import { SphereBackground } from "./SphereBackground";
 import { FormInput } from "./FormInput";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-hot-toast';
 
 
 export default function SignUpPage() {
@@ -42,10 +43,16 @@ export default function SignUpPage() {
       console.log("Response:", response.data);
 
       // Handle success (e.g., redirect or show a success message)
+      toast.success("Successfully signed up! 🎉");
       setButtonText("Signed Up!");
       navigate("/api/signin", { replace: true }); // Redirect to the "/welcome" page
     } catch (error) {
       console.error("Error signing up:", error);
+      if(!formData.name){
+        toast.error("All fields are mandatory")
+      }else{
+        toast.error("Error signing up");
+      }
       setFormData({
         name: "",
         email: "",

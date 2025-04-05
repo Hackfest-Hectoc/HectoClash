@@ -1,6 +1,6 @@
 "use client"
-
 import { useState, useEffect } from "react"
+import axios from "axios";
 import { Trophy, Medal, Brain, ArrowUp, ArrowDown } from "lucide-react"
 import { div } from "framer-motion/client"
 import Header from "./header"
@@ -49,6 +49,10 @@ export default function Leaderboard() {
 
     setLeaderboardData(sortedData)
   }, [sortBy, sortDirection])
+
+  // const getleaderboard = async ()=>{
+  //   const response = await axios.get('api/leaderboard')
+  // }
 
   // Function to handle sorting
   const handleSort = (criteria: "rank" | "score" | "name") => {

@@ -7,6 +7,7 @@ import { SphereBackground } from "./SphereBackground";
 import { FormInput } from "./FormInput";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-hot-toast';
 
 export default function SignIn() {
   const Backend_Url = import.meta.env.Backend_Url
@@ -41,9 +42,16 @@ export default function SignIn() {
 
       // Handle success (e.g., redirect or show a success message)
       setButtonText("Signed In!");
+      toast.success("Successfully signed in! 🎉");
       navigate("/", { replace: true }); // Redirect to the "/welcome" page
     } catch (error) {
       console.error("Error signing in:", error);
+     if(!formData.name || !formData.password){
+      toast.error("All fields are mandatory")
+     }else{
+
+       toast.error("Invalid credentials or server error.")
+     }
       // Handle error (e.g., show an error message)
       setFormData({
         name: "",
