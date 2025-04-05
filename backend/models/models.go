@@ -34,9 +34,11 @@ type Round struct {
 	Question string `json:"question"`
 }
 
-type GameandWin struct{
-	
+type GameAndWin struct {
+	Opponent string `json:"opponent"`
+	Win      int    `json:"win"`
 }
+
 
 type PracticeClient struct {
 	ID     string `json:"gid"`

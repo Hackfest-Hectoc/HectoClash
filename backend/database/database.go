@@ -48,7 +48,7 @@ func Connect() func() {
 	}
 }
 
-func FindGamesByUserID(userID string) ([]bson.M, error) {
+func GetGamesWithWins(userID string) ([]models.GameAndWin, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -65,15 +65,44 @@ func FindGamesByUserID(userID string) ([]bson.M, error) {
 	}
 	defer cursor.Close(ctx)
 
-	var results []bson.M
-	var out models.GameandWin
-	
-	if err := cursor.All(ctx, &results); err != nil {
-		return nil, Errorf("failed to decode results: %v", err)
+	var rawGames []bson.M
+	if err := cursor.All(ctx, &rawGames); err != nil {
+		return nil, err
+	}
+
+	var results []models.GameAndWin
+
+	for _, game := range rawGames {
+		var opponentName string
+		var win int
+
+		playerOneID := game["playerone"].(string)
+		// playerTwoID := game["playertwo"].(string)
+		playerOneName := game["player1name"].(string)
+		playerTwoName := game["player2name"].(string)
+		winnerID := game["winner"].(string)
+
+		if playerOneID == userID {
+			opponentName = playerTwoName
+		} else {
+			opponentName = playerOneName
+		}
+
+		if winnerID == userID {
+			win = 1
+		} else {
+			win = 0
+		}
+
+		results = append(results, models.GameAndWin{
+			Opponent: opponentName,
+			Win:      win,
+		})
 	}
 
 	return results, nil
 }
+
 
 
 func GetNoOfMatches(userID string) (int, error) {

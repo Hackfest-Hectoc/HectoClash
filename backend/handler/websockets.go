@@ -173,8 +173,13 @@ func WebSocketHandler(c *websocket.Conn) {
 				continue
 			}
 			if check := handleSubmitExpression(message.Message.(string), questions[count]); !check {
-				if err := c.WriteJSON(models.Response{Topic: "submitResponse", Message: false}); err != nil {
-					log.Println("error occurred..", err)
+				err := c.WriteJSON(models.Response{Topic: "submitResponse", Message: false}) 
+				if(GameClient.Playerone == uid){
+					
+					// GameClient.Player1WrongSolves = append(GameClient.Player1Expression, )
+				}
+				if err != nil {
+					log.Println("error occurred..", err)	
 					return
 				}
 			} else {
