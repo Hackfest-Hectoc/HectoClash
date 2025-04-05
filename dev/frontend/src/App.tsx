@@ -7,7 +7,7 @@ import GameSelect from './components/gameselect/gameselect';
 import MathGame from './components/gameselect/playArea';
 import Spectator from './components/gameselect/spectator';
 import LeaderBoard from './components/gameselect/leaderBoard';
-import Test from './components/gameselect/card';
+import Test from './components/gameselect/test';
 function App() {
   return (
     <Router>

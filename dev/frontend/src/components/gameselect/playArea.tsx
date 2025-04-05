@@ -1,361 +1,446 @@
-import { useState, useEffect, useRef } from "react";
-import { Bolt, MessageSquare, Clock } from "lucide-react";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion";
-import Header from "./header";
+"use client"
+
+import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Input } from "../ui/input"
+import { CheckCircle2, Circle, Lock, Clock, Trophy, Zap, User, Cookie } from "lucide-react"
+import axios from "axios"
+import Header from "./header"
+
+
 
 export default function MathGame() {
-  const [expression, setExpression] = useState("");
+  // Game state
+  let uid = ""
+  const [expression, setExpression] = useState("")
   const [gameData, setGameData] = useState({
-    string: "",
-    player_one: "Anubhab",
-    player_two: "Sagnik",
-    status: "",
-    player1expression: "",
-    player2expression: "",
-    player1curround: 0,
-    player2curround: 0,
-    player1points: 0,
-    player2points: 0,
-    noofrounds: 0,
-  });
-  const [round, setRound] = useState(1);
-  const [question, setQuestion] = useState("666666");
-  const [player1, setPlayer1] = useState({ username: "Anubhab", rating: 0 });
-  const [player2, setPlayer2] = useState({ username: "Sagnik", rating: 0 });
-  const ws = useRef<WebSocket | null>(null);
-  const submitButtonRef = useRef<HTMLButtonElement | null>(null);
+    "gid":                  "game123",
+    "player_one":           "player123",
+    "player_two":           "player456",
+    "status":               "status",
+    "player1expression":    "",
+    "player2expression":    "",
+    "player1solves":        ["0", "0", "0", "0", "0"],
+    "player2solves":        ["0", "0", "0", "0", "0"],
+    "player1questions":     ["0", "0", "0", "0", "0"],
+    "player2questions":     ["0", "0", "0", "0", "0"],
+    "player1curround":      1,
+    "player2curround":      1,
+    "player1points":        0,
+    "player2points":        0,
+    "player1ratingchanges": 0,
+    "player2ratingchanges": 0,
+    "noofrounds":           5,
+})
+  const [round, setRound] = useState(0)
+  const [question, setQuestion] = useState("666666")
+  const [player1, setPlayer1] = useState({ uid:"",username: "Anubhab", rating: 0 })
+  const [player2, setPlayer2] = useState({ uid:"",username: "Sagnik", rating: 0 })
 
+
+  // Refs
+  const ws = useRef<WebSocket | null>(null)
+  const submitButtonRef = useRef<HTMLButtonElement | null>(null)
+  function getCookie(name : string) {
+    const cookieValue = document.cookie
+      .split('; ')
+      .find(row => row.startsWith(name + '='))
+      ?.split('=')[1];
+    
+    return cookieValue ? decodeURIComponent(cookieValue) : "";
+  }
+
+  // Initialize WebSocket connection and game data
   useEffect(() => {
-    ws.current = new WebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}/ws`);
-    let interval: ReturnType<typeof setInterval>;
+    uid = getCookie("uid")
+    ws.current = new WebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}/ws`)
+    let interval: ReturnType<typeof setInterval>
+
     ws.current.onopen = () => {
-      console.log("WebSocket connection opened");
-    };
+      console.log("WebSocket connection opened")
+    }
 
     ws.current.onmessage = (event) => {
-      console.log("Received:", event.data);
+      console.log("Received:", event.data)
       try {
-        const data = JSON.parse(event.data);
+        const data = JSON.parse(event.data)
 
         if (data.title === "gameInit") {
-          setGameData(data.message);
-          gameInit(data.message);
+          setGameData(data.message)
+          gameInit(data.message)
           interval = setInterval(() => {
-            getGameData();
-          }, 100);
+            getGameData()
+          }, 100)
+
+          // Initialize rounds history
+
         }
+
         if (data.title === "question") {
-          setQuestion(data.message.question);
-          setRound(data.message.number);
+          setQuestion(data.message.question)
+          setRound(data.message.number)
+          setRound(data.message.number - 1)
+
+          // Update rounds history with new question
+
         }
+
         if (data.title === "submitResponse") {
-          handleSubmitResponse(data.message);
+          handleSubmitResponse(data.message)
         }
+
         if (data.title === "gameData") {
-          setGameData(data.message);
+          setGameData(data.message)
         }
       } catch (error) {
-        console.error("Error parsing message:", error);
+        console.error("Error parsing message:", error)
       }
-    };
+    }
 
     ws.current.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
+      console.error("WebSocket error:", error)
+    }
 
     ws.current.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
+      console.log("WebSocket connection closed")
+    }
 
     return () => {
-      if (ws.current) ws.current.close();
-      clearInterval(interval);
-    };
-  }, []);
+      if (ws.current) ws.current.close()
+      clearInterval(interval)
+    }
+  }, [])
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     getGameData();
-  //   }, 100);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
+  // Button feedback functions
   const changeBackgroundColor = (color: string) => {
     if (submitButtonRef.current) {
-      submitButtonRef.current.classList.remove("bg-green-300");
-      submitButtonRef.current.classList.add(color);
+      submitButtonRef.current.classList.remove("bg-green-300")
+      submitButtonRef.current.classList.add(color)
     }
-  };
+  }
 
   const resetBackgroundColor = (color: string) => {
     if (submitButtonRef.current) {
-      submitButtonRef.current.classList.remove(color);
-      submitButtonRef.current.classList.add("bg-green-300");
+      submitButtonRef.current.classList.remove(color)
+      submitButtonRef.current.classList.add("bg-green-300")
     }
-  };
+  }
 
   const handleSubmitResponse = (response: boolean) => {
     if (response) {
-      changeBackgroundColor("bg-green-500");
-      setTimeout(() => resetBackgroundColor("bg-green-500"), 200);
+      changeBackgroundColor("bg-green-500")
+      setTimeout(() => {console.log("hi")}, 200)
+      resetBackgroundColor("bg-green-500")
     } else {
-      changeBackgroundColor("bg-red-500");
-      setTimeout(() => resetBackgroundColor("bg-red-500"), 200);
+      changeBackgroundColor("bg-red-500")
+      setTimeout(() => {console.log("hi")}, 200)
+      resetBackgroundColor("bg-red-500")
     }
     if (submitButtonRef.current) {
-      submitButtonRef.current.disabled = false;
+      submitButtonRef.current.disabled = false
     }
-  };
+  }
 
   const handleSubmit = () => {
     if (submitButtonRef.current) {
-      submitButtonRef.current.disabled = true;
+      submitButtonRef.current.disabled = true
     }
 
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       const submitPayload = {
         title: "submit",
         message: expression,
-      };
-      ws.current.send(JSON.stringify(submitPayload));
-      console.log("Sent message:", submitPayload);
+      }
+      ws.current.send(JSON.stringify(submitPayload))
+      console.log("Sent message:", submitPayload)
     } else {
-      console.error("WebSocket is not open.");
+      console.error("WebSocket is not open.")
     }
-  };
+  }
 
   const gameInit = async (data: any) => {
     try {
-      const response1 = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/player/${data.player_one}`
-      );
-      setPlayer1(response1.data);
+      const response1 = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/player/${data.player_one}`)
+      setPlayer1(response1.data)
 
-      const response2 = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/player/${data.player_two}`
-      );
-      setPlayer2(response2.data);
+      const response2 = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/player/${data.player_two}`)
+      setPlayer2(response2.data)
     } catch (error) {
-      console.error("Error fetching player data:", error);
+      console.error("Error fetching player data:", error)
     }
-  };
+  }
 
   const handleExpressionChange = (newExpression: string) => {
-    setExpression(newExpression);
+    setExpression(newExpression)
 
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       const submitPayload = {
         title: "expression",
         message: newExpression,
-      };
-      ws.current.send(JSON.stringify(submitPayload));
-      console.log("Sent message:", submitPayload);
+      }
+      ws.current.send(JSON.stringify(submitPayload))
+      console.log("Sent message:", submitPayload)
     } else {
-      console.error("WebSocket is not open.");
+      console.error("WebSocket is not open.")
     }
-  };
+  }
 
   const getGameData = () => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       const submitPayload = {
         title: "gameData",
         message: "hi",
-      };
-      ws.current.send(JSON.stringify(submitPayload));
-      console.log("Sent message:", submitPayload);
-    } else {
-      console.error("WebSocket is not open.");
+      }
+      ws.current.send(JSON.stringify(submitPayload))
     }
-  };
+  }
+
+  // Helper function to render round status icon
+  const getSymbol = (roundIndex: number) => {
+    if (roundIndex < round) {
+      return <CheckCircle2 className="text-green-500" size={20} />
+    } else if (roundIndex === round) {
+      return <Circle className="text-white animate-pulse" size={20} />
+    } else {
+      return <Lock className="text-white" size={20} />
+    }
+  }
+
+  // Helper function to render question characters
+  const renderQuestion = (questionText: string) => (
+    <div className="flex mt-12 flex-wrap gap-3 sm:gap-4 bg-transparent text-2xl sm:text-3xl justify-center">
+      <AnimatePresence>
+        {questionText.split("").map((char, i) => (
+          <motion.span
+            key={i}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="flex items-center justify-center w-12 h-12 bg-transparent rounded-lg shadow-md border-[3px] border-white text-white"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+          >
+            {char}
+          </motion.span>
+        ))}
+      </AnimatePresence>
+    </div>
+  )
+
+  // Helper function to render player card
+  const renderPlayer = (player: any, color: string, points: number) => (
+    <motion.div
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.3 }}
+      className="flex flex-col items-center mt-3"
+    >
+      <div className={`relative flex items-center bg-transparent backdrop-blur-sm px-6 py-3 rounded-xl border border-${color}-400/20`}>
+        <div className={`absolute -top-3 left-1/2 transform -translate-x-1/2 bg-black/60 px-3 py-1 rounded-full border border-${color}-400/30 text-xs text-${color}-400`}>
+          {color === "green" ? "PLAYER 1" : "PLAYER 2"}
+        </div>
+        <motion.div
+          className={`bg-${color}-600 w-14 h-14 rounded-full text-2xl font-bold shadow-lg flex items-center justify-center text-white border-2 border-${color}-400`}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {player.username[0]}
+        </motion.div>
+        <div className="ml-4">
+          <motion.div
+            className="text-xl font-bold text-white flex items-center gap-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <User size={16} className={`text-${color}-400`} />
+            {player.username}
+          </motion.div>
+          <motion.div
+            className={`text-${color}-400 font-semibold flex items-center gap-2`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <Zap size={16} />
+            Rating: <div className="text-white">{player.rating}</div>
+          </motion.div>
+        </div>
+        <motion.div
+          className={`ml-6 flex flex-col items-center justify-center`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          {/* <div className="text-sm text-green-400 font-semibold flex items-center gap-1">
+            <Trophy size={14} />
+            POINTS
+          </div>
+          <div className={`text-3xl font-bold text-${color}-400`}>{points}</div> */}
+        </motion.div>
+      </div>
+    </motion.div>
+  )
+
 
   return (
-    <div className="bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)] bg-cover bg-center overflow-hidden h-screen">
+    <div className="bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)] bg-cover bg-center overflow-hidden h-screen flex flex-col">
+      {/* Logo and Header */}
       <img
         src="https://cdn.builder.io/api/v1/image/assets/TEMP/ca9e464b944ab22129b2e7d0da766b29064e4364"
         alt="Company Logo"
-        className="absolute left-6 h-[37px] top-[25px] w-[31px] z-10"
+        className="absolute left-6 h-[37px] top-[20px] w-[31px] z-10"
       />
       <Header></Header>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className=" w-full h-screen flex flex-col items-center  text-white "
-      >
 
-        {/* Main Content */}
-        <main className="mt-16 sm:mt-20 w-full max-w-4xl flex flex-col gap-8 items-center px-4">
+      {/* Game Status Bar */}
+        {/* Game Status Bar */}
+        <div className="bg-black/60 backdrop-blur-sm border-b border-green-400/20 py-2 px-4 flex items-center justify-center">
+        <div className="flex justify-evenly w-full items-center gap-3 text-white">
+          <span className="font-bold text-lg flex items-center gap-2 ">
+            ROUND: <span className="text-green-400">{uid == player1.uid ? gameData.player1curround : gameData.player2curround   }</span> /5
+          </span>
 
-          {/* Round Display */}
-          <motion.div
-            className=" top-32 sm:top-40 transform -translate-x-1/2 text-center mb-2"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{
-              type: "spring",
-              stiffness: 260,
-              damping: 20
-            }}
-          >
-            <span className="text-4xl sm:text-6xl font-bold text-green-300 shadow-lg">
-              Round <span className="text-white">{round}</span>
-            </span>
-          </motion.div>
-          {/* Score Board */}
-          <div className="flex flex-wrap gap-6 sm:gap-12 w-[1000px] justify-around">
-            <motion.div
-              className=""
-              initial={{ x: -100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              {/* Player Initial */}
-              <motion.span
-                className="bg-green-600 px-4 py-2 rounded-full text-2xl font-bold shadow-lg relative top-[-10px]"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {player1.username[0]}
-              </motion.span>
+          <span className="font-bold text-lg flex items-center gap-2 ml-[350px]">
+            ROUND: <span className="text-red-400">{uid !== player1.uid ? gameData.player1curround : gameData.player2curround  }</span> /5
+          </span>
+        </div>
+      </div>
 
-              {/* Player Details */}
-              <div className="inline-block">
-                <motion.div
-                  className="px-2 text-l font-semibold"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  {player1.username}
-                </motion.div>
-                <motion.div
-                  className="px-2 text-l text-green-400 font-semibold"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  {player1.rating}
-                </motion.div>
-              </div>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col items-center text-white">
+        {/* Players Section */}
+        <div className="w-full max-w-5xl flex flex-wrap justify-between gap-4 mt-8">
+          {renderPlayer(uid == player1.uid ? player1 : player2 , "green", uid == player1.uid ? gameData.player1points : gameData.player2points )}
+          {renderPlayer(uid !== player1.uid ? player1 : player2 , "red", uid !== player1.uid ? gameData.player1points : gameData.player2points)}
+        </div>
 
-              {/* Player Points */}
-              <motion.div
-                className=" pb-1 text-green-400 border-[3px] border-green-300 text-center text-3xl font-bold mt-2 bg-green-300/30 rounded-md px-4 w-[140px]"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                {gameData.player1points} 
-              </motion.div>
-            </motion.div>
-                      {/* Question Display */}
-          <div className="flex flex-wrap gap-3 sm:gap-4 bg-transparent text-2xl sm:text-3xl mt-[140px] mb-6 sm:mb-8 justify-center ">
-            <AnimatePresence>
-              {question.split("").map((char, i) => (
-                <motion.span
-                  key={i}
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -20, opacity: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className="flex items-center justify-center w-12 h-12 bg-transparent rounded-lg shadow-md border-[3px] border"
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                >
-                  {char}
-                </motion.span>
-              ))}
-            </AnimatePresence>
-          </div>
-            <motion.div
-              className=""
-              initial={{ x: -100, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              {/* Player Initial */}
-              <motion.span
-                className="bg-red-600 px-4 py-2 rounded-full text-2xl font-bold shadow-lg relative top-[-10px] "
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {player2.username[0]}
-              </motion.span>
+        {/* Current Question Section */}
+        <motion.div
+          className="mt-2  mb-8 text-center"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{
+            type: "spring",
+            stiffness: 260,
+            damping: 20,
+          }}
+        >
 
-              {/* Player Details */}
-              <div className="inline-block">
-                <motion.div
-                  className="px-2 text-l font-semibold"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  {player2.username}
-                </motion.div>
-                <motion.div
-                  className="px-2 text-l text-red-400 font-semibold"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  {player2.rating}
-                </motion.div>
-              </div>
+          {renderQuestion(question)}
+        </motion.div>
 
-              {/* Player Points */}
-              <motion.div
-                className=" pb-1 text-red-400 text-center text-3xl font-bold mt-2 bg-red-300/30 rounded-md px-4 w-[140px] border-[3px] border-red-400 "
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                {gameData.player1points} 
-              </motion.div>
-            </motion.div>
-
+        {/* Player Expressions
+        <div className="w-full max-w-4xl flex flex-wrap justify-between gap-4 mt-8">
+          <div className="w-full md:w-[48%] bg-black/30 backdrop-blur-sm rounded-xl border border-green-400/20 p-3">
+            <div className="text-center mb-2">
+              <div className="text-green-400 text-sm font-semibold">PLAYER 1 EXPRESSION</div>
+            </div>
+            <div className="text-center text-white text-lg font-mono truncate">
+              {gameData.player1expression || "..."}
+            </div>
           </div>
 
+          <div className="w-full md:w-[48%] bg-black/30 backdrop-blur-sm rounded-xl border border-red-400/20 p-3">
+            <div className="text-center mb-2">
+              <div className="text-red-400 text-sm font-semibold">PLAYER 2 EXPRESSION</div>
+            </div>
+            <div className="text-center text-white text-lg font-mono truncate">
+              {gameData.player2expression || "..."}
+            </div>
+          </div>
+        </div> */}
 
-
-
-          {/* Input Section */}
-          <motion.div
-            className="w-full max-w-md flex flex-col justify-center items-center align-center"
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6 }}
-          >
-            <motion.div
-              className="w-full"
-              whileHover={{ scale: 1.02 }}
-            >
+        {/* Input Section */}
+        <motion.div
+          className="w-full max-w-md flex flex-col justify-center items-center "
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          <motion.div className="w-full" whileHover={{ scale: 1.02 }}>
+            <div className="relative">
               <Input
-                className="text-center w-full  h-[45px]    border-[3px]  rounded-lg focus:ring-2 focus:ring-green-400 focus:border-[0px] text-white text-2xl"
+                className="text-center w-full h-[50px] rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400 text-white text-xl bg-black/50 border-white"
                 placeholder="Type your Expression..."
                 value={expression}
                 onChange={(e) => handleExpressionChange(e.target.value)}
               />
-            </motion.div>
-            <motion.div
-              className="w-full   flex justify-center"
-              whileHover={{ scale: 1.02 }}
-            >
-              <Button
-                ref={submitButtonRef}
-                onClick={handleSubmit}
-                variant="outline"
-                className="text-base sm:text-2xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-[none] border-b-green-600 mt-12 h-[45px] sm:h-[55px] text-black w-full max-w-[381px] hover:bg-green-600 transition-colors"
-              >
-                Submit
-              </Button>
-            </motion.div>
+            </div>
           </motion.div>
-        </main>
-      </motion.div>
+          <motion.div className="w-full flex justify-center mt-4" whileHover={{ scale: 1.02 }}>
+            <button
+              ref={submitButtonRef}
+              onClick={handleSubmit}
+              className="text-xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-b-green-600 h-[55px] text-black w-full max-w-[381px] hover:bg-green-600 hover:text-white transition-colors"
+            >
+              Submit
+            </button>
+          </motion.div>
+        </motion.div>
+
+        {/* Game History Section */}
+        <div className="w-full max-w-4xl mt-8 mb-8">
+          <div className="w-full bg-black/60 backdrop-blur-sm border border-green-400/30 rounded-xl overflow-hidden">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full">
+              <div className="grid grid-cols-[1fr_1fr_1fr] gap-2 font-medium text-green-400 px-4 py-3 bg-black/50 border-b border-green-400/20">
+                <div className="flex items-center gap-2">
+                  <Clock size={16} />
+                  ROUND
+                </div>
+                <div className="flex items-center gap-2">QUESTION</div>
+                <div className="flex items-center gap-2">SOLUTION</div>
+              </div>
+
+              <div className="flex flex-col gap-1 max-h-[25vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-green-500 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-green-500 [&::-webkit-scrollbar]:hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-transparent ">
+                
+                {(uid == player1.uid ? gameData.player1questions : gameData.player2questions).map((somedata, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`grid grid-cols-[1fr_1fr_1fr] gap-4 items-center p-3 ${
+                      index === round
+                        ? "bg-green-900/20 border-l-4 border-l-green-500"
+                        : index < round
+                          ? "bg-black/40"
+                          : "bg-black/20"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 flex items-center justify-center">{getSymbol(index)}</div>
+                      <span className="font-medium text-white">{index}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2 ml-1">
+                      <span className="font-mono text-green-100">
+                        {index <= round ? somedata : "------"}
+                      </span>
+                    </div>
+
+                    <div>
+                      {index < round ? (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="flex items-center gap-2"
+                        >
+                          <span className="font-mono text-green-100 ml-2">{uid == player1.uid ? gameData.player1solves[index-1] : gameData.player2solves[index-1]}</span>
+                        </motion.div>
+                      ) : (
+                        <span className="font-mono text-gray-400">------</span>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
 
