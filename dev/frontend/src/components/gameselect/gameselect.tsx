@@ -78,7 +78,7 @@ export default function GameSelect() {
                         variants={itemVariants}
                         whileHover="hover"
                         whileTap="tap"
-                        onClick={() => handleGameModeClick('online-duels')}
+                        onClick={() => handleGameModeClick('gamearea')}
                     >
                         <motion.img
                             whileHover={{ scale: 1.2 }}

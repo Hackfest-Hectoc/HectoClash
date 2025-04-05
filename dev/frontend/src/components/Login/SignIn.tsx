@@ -43,7 +43,7 @@ export default function SignIn() {
       // Handle success (e.g., redirect or show a success message)
       setButtonText("Signed In!");
       toast.success("Successfully signed in! 🎉");
-      navigate("/", { replace: true }); // Redirect to the "/welcome" page
+      navigate("/home", { replace: true }); // Redirect to the "/welcome" page
     } catch (error) {
       console.error("Error signing in:", error);
      if(!formData.name || !formData.password){
