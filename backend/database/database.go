@@ -202,7 +202,7 @@ func AddGameRecord(game *models.Game) {
 	var user models.User
 	Users.FindOne(context.TODO(), bson.M{"userid":game.Playerone}).Decode(&user)
 	game.Player1name = user.Username
-	Users.FindOne(context.TODO(), bson.M{"userid":game.Playertwo})
+	Users.FindOne(context.TODO(), bson.M{"userid":game.Playertwo}).Decode(&user)
 	game.Player2name = user.Username
 
 	_, err := Games.InsertOne(context.TODO(), game)
