@@ -328,7 +328,7 @@ export default function Spectator() {
           <div className="w-full max-w-md bg-transparent backdrop-blur-sm rounded-xl border border-red-400/20 mt-4 p-4">
             <div className="text-center mb-4">
               <div className="text-red-400 text-sm font-semibold mb-1">CURRENT QUESTION</div>
-              {renderQuestion(gameData.player2questions[gameData.player2curround])}
+              {renderQuestion(gameData.player2questions[gameData.player2curround-1])}
             </div>
 
             <motion.div
