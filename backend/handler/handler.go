@@ -23,6 +23,7 @@ func UpdateLeaderboardinRedis(c *fiber.Ctx) error {
 	}
 	var user []models.UserDetails
 
-	err = json.Unmarshal([]byte(s), &user)
+	s, _ = rdb.Get(ctx, LEADER_BOARD).Result()
+	_ = json.Unmarshal([]byte(s), &user)
 	return (c.Status(fiber.StatusOK).JSON(user))
 }
