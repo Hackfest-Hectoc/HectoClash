@@ -16,6 +16,8 @@ func main() {
 	handler.Connect()
 	log.Println("Connected to DB.")
 	log.Println("Starting Server...")
+	database.CreateLeaderBoardIndex()
+	log.Println("LeaderBoard")
 	app := fiber.New(fiber.Config{
 		StrictRouting: true,
 		AppName: "HectoClash",

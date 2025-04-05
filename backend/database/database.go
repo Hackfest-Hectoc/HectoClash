@@ -66,7 +66,6 @@ func ReturnTop20() []*models.UserDetails {
     if err := cursor.Err(); err != nil {
         log.Println("Cursor error:", err)
     }
-
     return users
 }
 
