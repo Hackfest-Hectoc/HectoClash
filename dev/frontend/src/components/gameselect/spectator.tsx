@@ -75,7 +75,9 @@ export default function Spectator() {
       }
     }
     ws.current.onerror = (error) => console.error("WebSocket error", error)
-    ws.current.onclose = () => console.log("WebSocket connection closed")
+    ws.current.onclose = () => {
+      navigate("/home") 
+      console.log("WebSocket connection closed")}
 
     return () => {
       ws.current?.close()
