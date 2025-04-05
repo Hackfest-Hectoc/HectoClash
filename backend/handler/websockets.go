@@ -262,7 +262,6 @@ func WebSocketHandler(c *websocket.Conn) {
 			}
 			gjson, _ := json.Marshal(Game)
 			rdb.SetXX(ctx, gid, gjson, time.Minute*10)
-			log.Println("expr")
 		case "gameData":
 			gamedetails, err = rdb.Get(ctx, gid).Result()
 			if err != nil {
@@ -301,7 +300,7 @@ func Spectate(c *websocket.Conn) {
 		if message.Title == "gameData" {
 			stringform, _ := rdb.Get(ctx, gid).Result()
 			json.Unmarshal([]byte(stringform), &game)
-			if err := c.WriteJSON(game); err != nil {
+			if err := c.WriteJSON(models.Response{Topic: "gameData", Message: game}); err != nil {
 				log.Println(err)
 				return
 			}

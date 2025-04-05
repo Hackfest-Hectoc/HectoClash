@@ -26,6 +26,7 @@ func Connect() {
 		Password: "",
 		DB:       0,
 	})
+	rdb.FlushAll(ctx)
 }
 
 func MatchMakingService() {
