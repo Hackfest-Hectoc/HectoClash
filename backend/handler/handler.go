@@ -20,10 +20,10 @@ func UpdateLeaderboardinRedis(c *fiber.Ctx) error {
 			log.Println("could not marsh")
 		}
 		rdb.Set(ctx, LEADER_BOARD, marsheledLead, 60*time.Second)
+		s, _ = rdb.Get(ctx, LEADER_BOARD).Result()
 	}
 	var user []models.UserDetails
 
-	s, _ = rdb.Get(ctx, LEADER_BOARD).Result()
 	_ = json.Unmarshal([]byte(s), &user)
 	return (c.Status(fiber.StatusOK).JSON(user))
 }
