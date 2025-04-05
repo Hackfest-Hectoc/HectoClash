@@ -75,15 +75,9 @@ func GetGameObject(key string) models.Game {
 	return game
 }
 
-func ExistsInQueue(uid string) bool {
-	_, err := rdb.ZScore(ctx, QUEUE_KEY, uid).Result()
-	if err == redis.Nil {
-		return false
-	} else if err != nil {
-		return false
-	} else {
-		return true
-	}
+func GameExists(uid string) bool {
+	_, err := rdb.Get(ctx, uid).Result()
+	return err != redis.Nil
 }
 
 func Connect() {
@@ -109,10 +103,12 @@ func WebSocketHandler(c *websocket.Conn) {
 		return
 	}
 
-	if check := AddtoQueue(uid); !check {
-		log.Println("ALERT: Failure in Redis Connection most probably.")
-		c.WriteJSON(Response{"failure", "Backend Error."})
-		return
+	if check := GameExists(uid); !check {
+		if check := AddtoQueue(uid); !check {
+			log.Println("ALERT: Failure in Redis Connection most probably.")
+			c.WriteJSON(Response{"failure", "Backend Error."})
+			return
+		}
 	}
 
 	var gid string
@@ -124,12 +120,12 @@ func WebSocketHandler(c *websocket.Conn) {
 		}
 	}
 
-	pubsub := rdb.Subscribe(ctx, gid)
-
-	// Close PubSub
-	defer pubsub.Close()
+	var game models.Game
+	p2, _ := rdb.Get(ctx, gid).Result()
+	json.Unmarshal([]byte(p2), &game)
+	defer rdb.Del(ctx, game.Playerone)
+	defer rdb.Del(ctx, game.Playertwo)
 	defer rdb.Del(ctx, gid)
-	defer rdb.Del(ctx, uid)
 
 	// go SubscribeToChannel(pubsub, c)
 
@@ -206,7 +202,10 @@ func WebSocketHandler(c *websocket.Conn) {
 				}
 				log.Printf("%+v", Game)
 				gjson, _ := json.Marshal(Game)
-				rdb.Set(ctx, gid, gjson, time.Minute*10)
+				err := rdb.SetXX(ctx, gid, gjson, time.Minute*10)
+				if err != nil {
+					return
+				}
 				if err := c.WriteJSON(models.Response{Topic: "submitResponse", Message: true}); err != nil {
 					log.Println("error occurred..", err)
 					return
@@ -218,7 +217,10 @@ func WebSocketHandler(c *websocket.Conn) {
 					}
 				}
 				if count == 5 {
-					gamedetails, _ := rdb.Get(ctx, gid).Result()
+					gamedetails, err := rdb.Get(ctx, gid).Result()
+					if err != nil {
+						return
+					}
 					json.Unmarshal([]byte(gamedetails), &Game)
 					if Game.Status != "completed" {
 						Game.Status = "completed"
@@ -248,7 +250,10 @@ func WebSocketHandler(c *websocket.Conn) {
 				}
 			}
 		case "expression":
-			gamedetails, _ = rdb.Get(ctx, gid).Result()
+			gamedetails, err = rdb.Get(ctx, gid).Result()
+			if err != nil {
+				return
+			}
 			json.Unmarshal([]byte(gamedetails), &Game)
 			if Game.Playerone == uid {
 				Game.Player1Expression = message.Message.(string)
@@ -259,7 +264,10 @@ func WebSocketHandler(c *websocket.Conn) {
 			rdb.Set(ctx, gid, gjson, time.Minute*10)
 			log.Println("expr")
 		case "gameData":
-			gamedetails, _ = rdb.Get(ctx, gid).Result()
+			gamedetails, err = rdb.Get(ctx, gid).Result()
+			if err != nil {
+				return 
+			}
 			json.Unmarshal([]byte(gamedetails), &GameClient)
 			if err := c.WriteJSON(models.Response{Topic: "gameData", Message: GameClient}); err != nil {
 				log.Println("Error writing to websocket, ", err)
@@ -277,7 +285,7 @@ func Spectate(c *websocket.Conn) {
 	} else {
 		var gamejson models.Game
 		json.Unmarshal([]byte(gamedata), &gamejson)
-		if err := c.WriteJSON(models.Response{Topic: "gameInit", Message: gamedata}); err != nil {
+		if err := c.WriteJSON(models.Response{Topic: "gameInit", Message: gamejson}); err != nil {
 			log.Println(err)
 			return
 		}
