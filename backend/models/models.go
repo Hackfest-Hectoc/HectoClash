@@ -30,6 +30,7 @@ type GameClient struct {
 	Playerone            string   `json:"player_one"`
 	Playertwo            string   `json:"player_two"`
 	Status               string   `json:"status"`
+	Winner               string   `json:"winner"`
 	Player1Expression    string   `json:"player1expression"`
 	Player2Expression    string   `json:"player2expression"`
 	Player1Solves        []string `json:"player1solves"`
@@ -51,6 +52,7 @@ type Game struct {
 	Playerone            string   `json:"player_one"`
 	Playertwo            string   `json:"player_two"`
 	Status               string   `json:"status"`
+	Winner               string   `json:"winner"`
 	Player1Expression    string   `json:"player1expression"`
 	Player2Expression    string   `json:"player2expression"`
 	Player1Solves        []string `json:"player1solves"`

@@ -15,10 +15,11 @@ type Game struct {
 	Player2Expression string    `json:"player2expression"`
 	Player1CurrRound  int64     `json:"player1curround"`
 	Player2CurrRound  int64     `json:"player2curround"`
-	Player1Questions     [5]string `json:"player1questions"`
-	Player2Questions     [5]string `json:"player2questions"`
+	Player1Questions  [5]string `json:"player1questions"`
+	Player2Questions  [5]string `json:"player2questions"`
 	Player1Points     int64     `json:"player1points"`
 	Player2Points     int64     `json:"player2points"`
+	Winner            string    `json:"winner"`
 	Player1Solves     [5]string `json:"player1solves"`
 	Player2Solves     [5]string `json:"player2solves"`
 	Questions         []string  `json:"questions"`
@@ -36,6 +37,7 @@ type GameClient struct {
 	Player2Solves        [5]string `json:"player2solves"`
 	Player1Questions     [5]string `json:"player1questions"`
 	Player2Questions     [5]string `json:"player2questions"`
+	Winner               string    `json:"winner"`
 	Player1CurrRound     int64     `json:"player1curround"`
 	Player2CurrRound     int64     `json:"player2curround"`
 	Player1Points        int64     `json:"player1points"`

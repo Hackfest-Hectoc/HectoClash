@@ -216,24 +216,31 @@ func WebSocketHandler(c *websocket.Conn) {
 					log.Println("error occurred..", err)
 					return
 				}
-				if count<=4 {
+				if count <= 4 {
 					if err := c.WriteJSON(models.Response{Topic: "question", Message: models.Round{Number: count + 1, Question: questions[count]}}); err != nil {
 						log.Println(err)
 						return
 					}
 				}
-				if count==5 {
-					winner := database.GetUserFromID(uid)
-					var player string
-					if uid == Game.Playerone {
-						player = Game.Playerone
-					} else {
-						player = Game.Playertwo
+				if count == 5 {
+					gamedetails, _ := rdb.Get(ctx, gid).Result()
+					json.Unmarshal([]byte(gamedetails), &Game)
+					if Game.Status != "completed" {
+						Game.Status = "completed"
+						Game.Winner = uid
+						gjson, _ := json.Marshal(Game)
+						rdb.Set(ctx, gid, gjson, time.Minute*10)
+						winner := database.GetUserFromID(uid)
+						var player string
+						if uid == Game.Playerone {
+							player = Game.Playerone
+						} else {
+							player = Game.Playertwo
+						}
+						loser := database.GetUserFromID(player)
+						GiveElo(&winner, &loser)
 					}
-					loser := database.GetUserFromID(player)
-					GiveElo()
 				}
-
 			}
 		case "expression":
 			gamedetails, _ = rdb.Get(ctx, gid).Result()
