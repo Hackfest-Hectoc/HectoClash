@@ -1,63 +1,94 @@
+"use client"
+
 import GameCompletionModal from "./modal"
 
-import { useState, useEffect, useRef, use } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { Input } from "../ui/input"
-import { CheckCircle2, Circle, Lock, Clock, Trophy, Zap, User, Cookie } from "lucide-react"
+import { CheckCircle2, Circle, Lock, Clock, Zap, User } from "lucide-react"
 import axios from "axios"
 import Header from "./header"
-
 import toast from "react-hot-toast"
 
+// Define the operators that can be dragged
+const operators = [
+  { id: "op1", value: "(" },
+  { id: "op2", value: ")" },
+  { id: "op3", value: "*" },
+  { id: "op4", value: "^" },
+  { id: "op5", value: "+" },
+  { id: "op6", value: "_" },
+  { id: "op7", value: "/" },
+]
 
-
-export default function MathGame() {
+export default function Test2() {
   // Game state
   let uid = ""
   const [expression, setExpression] = useState("")
+  const [questionWithOperators, setQuestionWithOperators] = useState<string[]>([])
   const [gameData, setGameData] = useState({
-    "gid": "game123",
-    "player_one": "player123",
-    "player_two": "player456",
-    "status": "status",
-    "player1expression": "",
-    "player2expression": "",
-    "player1solves": ["0", "0", "0", "0", "0"],
-    "player2solves": ["0", "0", "0", "0", "0"],
-    "player1questions": ["0", "0", "0", "0", "0"],
-    "player2questions": ["0", "0", "0", "0", "0"],
-    "player1curround": 1,
-    "player2curround": 1,
-    "player1points": 0,
-    "player2points": 0,
-    "player1ratingchanges": 0,
-    "player2ratingchanges": 0,
-    "noofrounds": 5,
-    "winner" : "",
+    gid: "game123",
+    player_one: "player123",
+    player_two: "player456",
+    status: "status",
+    player1expression: "",
+    player2expression: "",
+    player1solves: ["0", "0", "0", "0", "0"],
+    player2solves: ["0", "0", "0", "0", "0"],
+    player1questions: ["0", "0", "0", "0", "0"],
+    player2questions: ["0", "0", "0", "0", "0"],
+    player1curround: 1,
+    player2curround: 1,
+    player1points: 0,
+    player2points: 0,
+    player1ratingchanges: 0,
+    player2ratingchanges: 0,
+    noofrounds: 5,
+    winner: "",
   })
   const [round, setRound] = useState(0)
   const [question, setQuestion] = useState("666666")
   const [player1, setPlayer1] = useState({ uid: "", username: "Anubhab", rating: 0 })
   const [player2, setPlayer2] = useState({ uid: "", username: "Sagnik", rating: 0 })
-  const [showGameCompleteModal, setShowGameCompleteModal] = useState(false);
-
+  const [showGameCompleteModal, setShowGameCompleteModal] = useState(false)
 
   // Refs
   const ws = useRef<WebSocket | null>(null)
   const submitButtonRef = useRef<HTMLButtonElement | null>(null)
+  const questionContainerRef = useRef<HTMLDivElement>(null)
+
   function getCookie(name: string) {
     const cookieValue = document.cookie
-      .split('; ')
-      .find(row => row.startsWith(name + '='))
-      ?.split('=')[1];
+      .split("; ")
+      .find((row) => row.startsWith(name + "="))
+      ?.split("=")[1]
 
-    return cookieValue ? decodeURIComponent(cookieValue) : "";
+    return cookieValue ? decodeURIComponent(cookieValue) : ""
   }
   uid = getCookie("uid")
+
+  // Initialize question with operators array when question changes
+  useEffect(() => {
+    setQuestionWithOperators(question.split(""))
+  }, [question])
+  
+
+  // Update expression whenever questionWithOperators changes
+  useEffect(() => {
+    const newExpression = questionWithOperators.join("")
+    setExpression(newExpression)
+
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      const submitPayload = {
+        title: "expression",
+        message: newExpression,
+      }
+      ws.current.send(JSON.stringify(submitPayload))
+    }
+  }, [questionWithOperators])
+
   // Initialize WebSocket connection and game data
   useEffect(() => {
-
     ws.current = new WebSocket(`ws://localhost:8000/ws`)
     let interval: ReturnType<typeof setInterval>
 
@@ -76,18 +107,12 @@ export default function MathGame() {
           interval = setInterval(() => {
             getGameData()
           }, 100)
-
-          // Initialize rounds history
-
         }
 
         if (data.title === "question") {
           setQuestion(data.message.question)
           setRound(data.message.number)
           setRound(data.message.number - 1)
-
-          // Update rounds history with new question
-
         }
 
         if (data.title === "submitResponse") {
@@ -111,7 +136,6 @@ export default function MathGame() {
 
     ws.current.onclose = () => {
       console.log("WebSocket connection closed")
-      // navigate("/home")
     }
 
     return () => {
@@ -139,12 +163,16 @@ export default function MathGame() {
     if (response) {
       toast.success("Correct answer!  🎉")
       changeBackgroundColor("bg-green-500")
-      setTimeout(() => { console.log("hi") }, 200)
+      setTimeout(() => {
+        console.log("hi")
+      }, 200)
       resetBackgroundColor("bg-green-500")
     } else {
       toast.error("Wrong answer!  ❌")
       changeBackgroundColor("bg-red-500")
-      setTimeout(() => { console.log("hi") }, 200)
+      setTimeout(() => {
+        console.log("hi")
+      }, 200)
       resetBackgroundColor("bg-red-500")
     }
     if (submitButtonRef.current) {
@@ -181,21 +209,6 @@ export default function MathGame() {
     }
   }
 
-  const handleExpressionChange = (newExpression: string) => {
-    setExpression(newExpression)
-
-    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      const submitPayload = {
-        title: "expression",
-        message: newExpression,
-      }
-      ws.current.send(JSON.stringify(submitPayload))
-      console.log("Sent message:", submitPayload)
-    } else {
-      console.error("WebSocket is not open.")
-    }
-  }
-
   const getGameData = () => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
       const submitPayload = {
@@ -204,6 +217,56 @@ export default function MathGame() {
       }
       ws.current.send(JSON.stringify(submitPayload))
     }
+  }
+
+  // Insert operator at specific position
+  const insertOperatorAt = (index: number, operator: string) => {
+    const newQuestionWithOperators = [...questionWithOperators]
+    newQuestionWithOperators.splice(index, 0, operator)
+    setQuestionWithOperators(newQuestionWithOperators)
+  }
+
+  // Handle drag end for operators
+  const handleDragEnd = (operator: string, event: MouseEvent) => {
+    if (questionContainerRef.current) {
+      const containerRect = questionContainerRef.current.getBoundingClientRect()
+      const questionItems = questionContainerRef.current.querySelectorAll(".question-item")
+
+      // Check if the drag ended within the question container
+      if (
+        event.clientX >= containerRect.left &&
+        event.clientX <= containerRect.right &&
+        event.clientY >= containerRect.top &&
+        event.clientY <= containerRect.bottom
+      ) {
+        // Find the closest question item to insert the operator
+        let closestIndex = 0
+        let closestDistance = Number.POSITIVE_INFINITY
+
+        questionItems.forEach((item, index) => {
+          const itemRect = item.getBoundingClientRect()
+          const itemCenter = itemRect.left + itemRect.width / 2
+          const distance = Math.abs(event.clientX - itemCenter)
+
+          if (distance < closestDistance) {
+            closestDistance = distance
+            closestIndex = index
+
+            // If we're closer to the right edge of the item, insert after it
+            if (event.clientX > itemCenter) {
+              closestIndex = index + 1
+            }
+          }
+        })
+
+        insertOperatorAt(closestIndex, operator)
+      }
+    }
+  }
+
+  // Clear all operators from the expression
+  const clearOperators = () => {
+    setQuestionWithOperators(question.split(""))
   }
 
   // Helper function to render round status icon
@@ -217,27 +280,6 @@ export default function MathGame() {
     }
   }
 
-  // Helper function to render question characters
-  const renderQuestion = (questionText: string) => (
-    <div className="flex mt-12 flex-wrap gap-3 sm:gap-4 bg-transparent text-2xl sm:text-3xl justify-center">
-      <AnimatePresence>
-        {questionText.split("").map((char, i) => (
-          <motion.span
-            key={i}
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -20, opacity: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="flex items-center justify-center w-12 h-12 bg-transparent rounded-lg shadow-md border-[3px] border-white text-white"
-            whileHover={{ scale: 1.1, rotate: 5 }}
-          >
-            {char}
-          </motion.span>
-        ))}
-      </AnimatePresence>
-    </div>
-  )
-
   // Helper function to render player card
   const renderPlayer = (player: any, color: string, points: number) => (
     <motion.div
@@ -246,8 +288,12 @@ export default function MathGame() {
       transition={{ delay: 0.3 }}
       className="flex flex-col items-center mt-3"
     >
-      <div className={`relative flex items-center bg-transparent backdrop-blur-sm px-6 py-3 rounded-xl border border-${color}-400/20`}>
-        <div className={`absolute -top-3 left-1/2 transform -translate-x-1/2 bg-black/60 px-3 py-1 rounded-full border border-${color}-400/30 text-xs text-${color}-400`}>
+      <div
+        className={`relative flex items-center bg-transparent backdrop-blur-sm px-6 py-3 rounded-xl border border-${color}-400/20`}
+      >
+        <div
+          className={`absolute -top-3 left-1/2 transform -translate-x-1/2 bg-black/60 px-3 py-1 rounded-full border border-${color}-400/30 text-xs text-${color}-400`}
+        >
           {color === "green" ? "PLAYER 1" : "PLAYER 2"}
         </div>
         <motion.div
@@ -282,32 +328,36 @@ export default function MathGame() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-        >
-          {/* <div className="text-sm text-green-400 font-semibold flex items-center gap-1">
-            <Trophy size={14} />
-            POINTS
-          </div>
-          <div className={`text-3xl font-bold text-${color}-400`}>{points}</div> */}
-        </motion.div>
+        ></motion.div>
       </div>
     </motion.div>
   )
-const navigate = useNavigate()
+
+  const navigate = useNavigate()
 
   return (
-
     <div className="bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)] bg-cover bg-center overflow-hidden h-screen flex flex-col">
       <GameCompletionModal
         isOpen={showGameCompleteModal}
         onClose={() => setShowGameCompleteModal(false)}
-        player1={{ username: player1.username, rating: player1.rating, uid: player1.uid, ratingChange: gameData.player1ratingchanges }}
-        player2={{username: player2.username, rating: player2.rating, uid: player2.uid, ratingChange: gameData.player2ratingchanges }}
+        player1={{
+          username: player1.username,
+          rating: player1.rating,
+          uid: player1.uid,
+          ratingChanges: gameData.player1ratingchanges,
+        }}
+        player2={{
+          username: player2.username,
+          rating: player2.rating,
+          uid: player2.uid,
+          ratingChanges: gameData.player2ratingchanges,
+        }}
         winner={gameData.winner}
         uid={uid}
         navigate={navigate}
-        page="gamearea"
-        
+        page="gamearea2"
       />
+
       {/* Logo and Header */}
       <img
         src="https://cdn.builder.io/api/v1/image/assets/TEMP/ca9e464b944ab22129b2e7d0da766b29064e4364"
@@ -316,17 +366,23 @@ const navigate = useNavigate()
       />
       <Header></Header>
 
-
-      {/* Game Status Bar */}
       {/* Game Status Bar */}
       <div className="bg-black/60 backdrop-blur-sm border-b border-green-400/20 py-2 px-4 flex items-center justify-center">
         <div className="flex justify-evenly w-full items-center gap-3 text-white">
           <span className="font-bold text-lg flex items-center gap-2 ">
-            ROUND: <span className="text-green-400">{uid == player1.uid ? gameData.player1curround : gameData.player2curround}</span> /5
+            ROUND:{" "}
+            <span className="text-green-400">
+              {uid == player1.uid ? gameData.player1curround : gameData.player2curround}
+            </span>{" "}
+            /5
           </span>
 
           <span className="font-bold text-lg flex items-center gap-2 ml-[350px]">
-            ROUND: <span className="text-red-400">{uid !== player1.uid ? gameData.player1curround : gameData.player2curround}</span> /5
+            ROUND:{" "}
+            <span className="text-red-400">
+              {uid !== player1.uid ? gameData.player1curround : gameData.player2curround}
+            </span>{" "}
+            /5
           </span>
         </div>
       </div>
@@ -335,13 +391,22 @@ const navigate = useNavigate()
       <div className="flex-1 flex flex-col items-center text-white">
         {/* Players Section */}
         <div className="w-full max-w-5xl flex flex-wrap justify-between gap-4 mt-8">
-          {renderPlayer(uid == player1.uid ? player1 : player2, "green", uid == player1.uid ? gameData.player1points : gameData.player2points)}
-          {renderPlayer(uid !== player1.uid ? player1 : player2, "red", uid !== player1.uid ? gameData.player1points : gameData.player2points)}
+          {renderPlayer(
+            uid == player1.uid ? player1 : player2,
+            "green",
+            uid == player1.uid ? gameData.player1points : gameData.player2points,
+          )}
+          {renderPlayer(
+            uid !== player1.uid ? player1 : player2,
+            "red",
+            uid !== player1.uid ? gameData.player1points : gameData.player2points,
+          )}
         </div>
 
-        {/* Current Question Section */}
+        {/* Current Question Section - Now a drop zone */}
         <motion.div
-          className="mt-2  mb-8 text-center"
+          ref={questionContainerRef}
+          className="mt-12 mb-2 mx-4 px-4 flex flex-wrap gap-1 sm:gap-4 justify-center relative min-h-[40px]"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{
@@ -350,64 +415,71 @@ const navigate = useNavigate()
             damping: 20,
           }}
         >
-
-          {renderQuestion(question)}
+          <AnimatePresence>
+            {questionWithOperators.map((char, i) => (
+              <motion.span
+                key={`question-${i}`}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -20, opacity: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className={`question-item flex items-center justify-center text-2xl sm:text-3xl rounded-lg shadow-md ${operators.some((op) => op.value === char) ? "border-green-500 text-green-400 w-2 h-8" : "border-white text-white  w-4 h-8"}`}
+                whileHover={{ scale: 1.1, rotate: 5 }}
+              >
+                {char}
+              </motion.span>
+            ))}
+          </AnimatePresence>
         </motion.div>
 
-        {/* Player Expressions
-        <div className="w-full max-w-4xl flex flex-wrap justify-between gap-4 mt-8">
-          <div className="w-full md:w-[48%] bg-black/30 backdrop-blur-sm rounded-xl border border-green-400/20 p-3">
-            <div className="text-center mb-2">
-              <div className="text-green-400 text-sm font-semibold">PLAYER 1 EXPRESSION</div>
-            </div>
-            <div className="text-center text-white text-lg font-mono truncate">
-              {gameData.player1expression || "..."}
+        {/* Operators Section */}
+        <div className="w-full max-w-md flex flex-col justify-center items-center">
+          <div className="w-full bg-black/40 backdrop-blur-sm rounded-lg p-4 mb-4">
+            <div className="text-center mb-2 text-green-400 text-sm font-semibold">OPERATORS</div>
+            <div className="flex flex-wrap justify-center gap-4">
+              {operators.map((op) => (
+                <motion.div
+                  key={op.id}
+                  drag
+                  dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                  dragElastic={1}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onDragEnd={(e, info) => handleDragEnd(op.value, e as unknown as MouseEvent)}
+                  className="text-3xl font-bold text-white cursor-grab"
+                >
+                  {op.value}
+                </motion.div>
+              ))}
             </div>
           </div>
 
-          <div className="w-full md:w-[48%] bg-black/30 backdrop-blur-sm rounded-xl border border-red-400/20 p-3">
-            <div className="text-center mb-2">
-              <div className="text-red-400 text-sm font-semibold">PLAYER 2 EXPRESSION</div>
-            </div>
-            <div className="text-center text-white text-lg font-mono truncate">
-              {gameData.player2expression || "..."}
-            </div>
-          </div>
-        </div> */}
-
-        {/* Input Section */}
-        <motion.div
-          className="w-full max-w-md flex flex-col justify-center items-center "
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <motion.div className="w-full" whileHover={{ scale: 1.02 }}>
-            <div className="relative">
-              <Input
-                className="text-center w-full h-[50px] rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400 text-white text-xl bg-black/50 border-white"
-                placeholder="Type your Expression..."
-                value={expression}
-                onChange={(e) => handleExpressionChange(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleSubmit
-                  }
-                }}
-              />
-            </div>
+          {/* Control Buttons */}
+          <div className="flex justify-center items-center gap-4 w-full" >
+          <motion.div className="w-full flex justify-center" whileHover={{ scale: 1.02 }}>
+            <button
+              ref={submitButtonRef}
+              onClick={clearOperators}
+              className="text-xl font-bold rounded-xl border-b-4 border-solid bg-red-300 cursor-pointer border-b-red-600 h-[50px] text-black w-full max-w-[381px] hover:bg-red-600 hover:text-white transition-colors"
+            >
+              Reset
+            </button>
           </motion.div>
-          <motion.div className="w-full flex justify-center mt-4" whileHover={{ scale: 1.02 }}>
+
+          {/* Submit Button */}
+          <motion.div className="w-full flex justify-center" whileHover={{ scale: 1.02 }}>
             <button
               ref={submitButtonRef}
               onClick={handleSubmit}
-              className="text-xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-b-green-600 h-[55px] text-black w-full max-w-[381px] hover:bg-green-600 hover:text-white transition-colors"
+              className="text-xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-b-green-600 h-[50px] text-black w-full max-w-[381px] hover:bg-green-600 hover:text-white transition-colors"
             >
               Submit
             </button>
           </motion.div>
-        </motion.div>
+        </div>
 
+          </div>
+         
         {/* Game History Section */}
         <div className="w-full max-w-4xl mt-8 mb-8">
           <div className="w-full bg-black/60 backdrop-blur-sm border border-green-400/30 rounded-xl overflow-hidden">
@@ -422,19 +494,19 @@ const navigate = useNavigate()
               </div>
 
               <div className="flex flex-col gap-1 max-h-[25vh] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-green-500 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-green-500 [&::-webkit-scrollbar]:hidden scrollbar-thin scrollbar-track-transparent scrollbar-thumb-transparent ">
-
                 {(uid == player1.uid ? gameData.player1questions : gameData.player2questions).map((somedata, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: index * 0.1 }}
-                    className={`grid grid-cols-[1fr_1fr_1fr] gap-4 items-center p-3 ${index === round
+                    className={`grid grid-cols-[1fr_1fr_1fr] gap-4 items-center p-3 ${
+                      index === round
                         ? "bg-green-900/20 border-l-4 border-l-green-500"
                         : index < round
                           ? "bg-black/40"
                           : "bg-black/20"
-                      }`}
+                    }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 flex items-center justify-center">{getSymbol(index)}</div>
@@ -442,9 +514,7 @@ const navigate = useNavigate()
                     </div>
 
                     <div className="flex items-center gap-2 ml-1">
-                      <span className="font-mono text-green-100">
-                        {index <= round ? somedata : "------"}
-                      </span>
+                      <span className="font-mono text-green-100">{index <= round ? somedata : "------"}</span>
                     </div>
 
                     <div>
@@ -454,7 +524,9 @@ const navigate = useNavigate()
                           animate={{ opacity: 1 }}
                           className="flex items-center gap-2"
                         >
-                          <span className="font-mono text-green-100 ml-2">{uid == player1.uid ? gameData.player1solves[index] : gameData.player2solves[index]}</span>
+                          <span className="font-mono text-green-100 ml-2">
+                            {uid == player1.uid ? gameData.player1solves[index] : gameData.player2solves[index]}
+                          </span>
                         </motion.div>
                       ) : (
                         <span className="font-mono text-gray-400">------</span>
