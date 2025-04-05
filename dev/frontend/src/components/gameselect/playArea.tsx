@@ -388,6 +388,11 @@ const navigate = useNavigate()
                 placeholder="Type your Expression..."
                 value={expression}
                 onChange={(e) => handleExpressionChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSubmit()
+                  }
+                }}
               />
             </div>
           </motion.div>
