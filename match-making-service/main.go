@@ -54,6 +54,8 @@ func MatchMakingService() {
 			// they will automatically be removed from the database
 			var gameState models.Game
 
+			gameState.StartTime = time.Now().Unix()
+			// gameState.EndTime = 
 			gameState.ID = gid
 			gameState.Playerone = first
 			gameState.Playertwo = second
@@ -63,7 +65,6 @@ func MatchMakingService() {
 			gameState.Questions = GenerateHectoc(5)
 			gameState.NoofRounds = 5
 			gamestatejson, _ := json.Marshal(gameState)
-
 			rdb.Set(ctx, gid,gamestatejson, time.Minute*10)
 			rdb.Set(ctx, first, gid, time.Minute*10)
 			rdb.Set(ctx, second, gid, time.Minute*10)

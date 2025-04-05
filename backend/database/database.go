@@ -21,6 +21,17 @@ var DB *mongo.Database
 var Users *mongo.Collection
 var Games *mongo.Collection
 
+
+// func GetProfilePageStuff(){
+
+// 	Users
+
+// }
+
+
+
+
+
 func Connect() func() {
 	Client, err := mongo.Connect(options.Client().ApplyURI(config.MONGO_URI))
 	if err != nil {
@@ -35,6 +46,50 @@ func Connect() func() {
 			panic(err)
 		}
 	}
+}
+
+func FindGamesByUserID(userID string) ([]bson.M, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{
+		"$or": []bson.M{
+			{"playerone": userID},
+			{"playertwo": userID},
+		},
+	}
+
+	cursor, err := Games.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var results []bson.M
+	var out models.GameandWin
+	
+	if err := cursor.All(ctx, &results); err != nil {
+		return nil, Errorf("failed to decode results: %v", err)
+	}
+
+	return results, nil
+}
+
+
+func GetNoOfMatches(userID string) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var result struct {
+		Games []interface{} `bson:"games"`
+	}
+
+	err := Users.FindOne(ctx, bson.M{"userid": userID}).Decode(&result)
+	if err != nil {
+		return 0, err
+	}
+
+	return len(result.Games), nil
 }
 
 func ReturnTop20() []*models.UserDetails {
@@ -70,32 +125,40 @@ func ReturnTop20() []*models.UserDetails {
 }
 
 func UpdateRatinginMongo(winner, loser *models.UserDetails) {
-
-	// collection := client.Database("hectoc_db").Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	// Create time-stamped rating entries
+	winnerRatingEntry := bson.M{
+		"rating":    winner.Rating,
+		"timestamp": time.Now(),
+	}
+	loserRatingEntry := bson.M{
+		"rating":    loser.Rating,
+		"timestamp": time.Now(),
+	}
 
-
+	// Update winner: push new rating to ratings array
 	_, err := Users.UpdateOne(
 		ctx,
 		bson.M{"userid": winner.Userid},
-		bson.M{"$set": bson.M{"rating": winner.Rating}},
+		bson.M{"$push": bson.M{"ratings": winnerRatingEntry}},
 	)
 	if err != nil {
 		log.Printf("Failed to update winner rating: %v", err)
 	}
 
-	// Update loser rating
+	// Update loser: push new rating to ratings array
 	_, err = Users.UpdateOne(
 		ctx,
 		bson.M{"userid": loser.Userid},
-		bson.M{"$set": bson.M{"rating": loser.Rating}},
+		bson.M{"$push": bson.M{"ratings": loserRatingEntry}},
 	)
-	log.Println("done")
 	if err != nil {
 		log.Printf("Failed to update loser rating: %v", err)
 	}
+
+	log.Println("Rating updates completed")
 }
 	
 
@@ -147,8 +210,12 @@ func Register(user *models.User) bool {
 	} else {
 		user.Password = string(hashedPassword)
 	}
+	var defaultRating models.RatingEntry
+	defaultRating.Rating = 800
+	defaultRating.Timestamp = time.Now().Unix()
 	user.Userid = uuid.New().String()
-	user.Rating = 800
+	user.Rating = append(user.Rating, defaultRating)
+	
 	if _, err := Users.InsertOne(context.TODO(), user); err != nil {
 		log.Println(err)
 		return false
@@ -191,6 +258,8 @@ func AddGameToPlayer(uid, gid string) {
 		log.Println(err)
 	}
 }
+
+
 
 type custom struct {
 	Player1name string `bson:"player1name" json:"player1name"`

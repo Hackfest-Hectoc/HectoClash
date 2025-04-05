@@ -1,12 +1,21 @@
 package models
 
+// import "time"
+
+type Profile struct {
+}
+
+type RatingEntry struct {
+	Rating    float64   `bson:"ratingval" json:"ratingval"`
+	Timestamp int64 `bson:"timestamp" json:"timestamp"`
+}
 type User struct {
-	Username string   `bson:"username"`
-	Userid   string   `bson:"userid"`
-	Email    string   `bson:"email"`
-	Password string   `bson:"password"`
-	Games    []string `bson:"games"`
-	Rating   int64    `bson:"rating"`
+	Username string        `bson:"username"`
+	Userid   string        `bson:"userid"`
+	Email    string        `bson:"email"`
+	Password string        `bson:"password"`
+	Games    []string      `bson:"games"`
+	Rating   []RatingEntry `bson:"rating"`
 }
 
 type UserDetails struct {
@@ -25,15 +34,19 @@ type Round struct {
 	Question string `json:"question"`
 }
 
+type GameandWin struct{
+	
+}
+
 type PracticeClient struct {
-	ID               string   `json:"gid"`
-	Status           string   `json:"status"`
+	ID     string `json:"gid"`
+	Status string `json:"status"`
 	// PlayerExpression string   `json:"player1expression"`
-	PlayerSolves     []string `json:"player1solves"`
-	PlayerQuestions  []string `json:"playerquestions"`
-	Questions        []string `json:"questions"`
-	PlayerCurrRound  int64    `json:"player1curround"`
-	NoofRounds       int64    `json:"noofrounds"`
+	PlayerSolves    []string `json:"player1solves"`
+	PlayerQuestions []string `json:"playerquestions"`
+	Questions       []string `json:"questions"`
+	PlayerCurrRound int64    `json:"player1curround"`
+	NoofRounds      int64    `json:"noofrounds"`
 }
 
 type GameClient struct {
@@ -50,6 +63,8 @@ type GameClient struct {
 	Player2Solves        []string `json:"player2solves"`
 	Player1Questions     []string `json:"player1questions"`
 	Player2Questions     []string `json:"player2questions"`
+	Player1WrongSolves   []string `json:"player1wrong"`
+	Player2WrongSolves   []string `json:"player2wrong"`
 	Questions            []string `json:"questions"`
 	Player1CurrRound     int64    `json:"player1curround"`
 	Player2CurrRound     int64    `json:"player2curround"`
@@ -82,6 +97,8 @@ type Game struct {
 	Player2RatingChanges int64    `json:"player2ratingchanges"`
 	Questions            []string `json:"questions"`
 	NoofRounds           int64    `json:"noofrounds"`
+	StartTime            int64    `json:"starttime"`
+	EndTime              int64    `json:"endtime"`
 }
 
 type Response struct {

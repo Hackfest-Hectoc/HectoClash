@@ -224,6 +224,7 @@ func WebSocketHandler(c *websocket.Conn) {
 					json.Unmarshal([]byte(gamedetails), &Game)
 					if Game.Status != "completed" {
 						Game.Status = "completed"
+						Game.EndTime = time.Now().Unix()
 						Game.Winner = uid
 						gjson, _ := json.Marshal(Game)
 						rdb.SetXX(ctx, gid, gjson, time.Minute*10)

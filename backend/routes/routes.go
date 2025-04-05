@@ -17,6 +17,7 @@ func SetupRoutes(app *fiber.App) {
 	app.Post("/api/register", handler.Register).Name("Register")
 	app.Post("/api/login", handler.Login).Name("Login")
 	app.Get("/api/player/:id", handler.PlayerID).Name("Get Player Details from ID")
+	app.Get("/api/player/matches/:id", handler.GetMatches).Name("Get Player Details from ID")
 	app.Get("/api/leaderboard", handler.UpdateLeaderboardinRedis).Name("Get Leaderboard")
 	app.Get("/spectate", websocket.New(handler.Spectate)).Name("Spectate Handler")
 	app.Get("/ws", websocket.New(handler.WebSocketHandler)).Name("Websocket handler")

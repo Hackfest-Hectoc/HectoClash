@@ -24,6 +24,8 @@ type Game struct {
 	Player2Solves     [5]string `json:"player2solves"`
 	Questions         []string  `json:"questions"`
 	NoofRounds        int64     `json:"noofrounds"`
+	StartTime         int64     `json:"starttime"`
+	EndTime           int64     `json:"endime"`
 }
 
 type GameClient struct {

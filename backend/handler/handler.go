@@ -27,3 +27,16 @@ func UpdateLeaderboardinRedis(c *fiber.Ctx) error {
 	_ = json.Unmarshal([]byte(s), &user)
 	return (c.Status(fiber.StatusOK).JSON(user))
 }
+func GetMatches(c *fiber.Ctx) error {
+
+	user , err:= database.GetNoOfMatches(c.Params("id"))
+
+	if err!= nil{
+		log.Println("couldnt retrive from mongo")
+		return err
+	}
+	
+	return (c.Status(fiber.StatusOK).JSON(user))
+}
+
+
