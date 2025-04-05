@@ -5,10 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"time"
-
 	"github.com/Hackfest-Hectoc/HectoClash/backend/models"
 	"github.com/gofiber/contrib/websocket"
-
 	"github.com/redis/go-redis/v9"
 )
 

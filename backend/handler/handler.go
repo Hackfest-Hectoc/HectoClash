@@ -11,7 +11,7 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func UpdatedLeaderboardinRedis(c *fiber.Ctx) error {
+func UpdateLeaderboardinRedis(c *fiber.Ctx) error {
 
 	s, err := rdb.Get(ctx, LEADER_BOARD).Result()
 	if err == redis.Nil {
