@@ -1,7 +1,7 @@
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import SignUpPage from './components/Signup/SignUpPage';
-import { Toaster } from 'react-hot-toast'; 
+import { Toaster } from 'react-hot-toast';
 import SignIn from './components/Login/SignIn';
 import Home from './components/Home/Home';
 import GameSelect from './components/gameselect/gameselect';
@@ -9,6 +9,8 @@ import MathGame from './components/gameselect/playArea';
 import Spectator from './components/gameselect/spectator';
 import LeaderBoard from './components/gameselect/leaderBoard';
 import Test from './components/gameselect/test';
+import PracticeMode from './components/gameselect/practice';
+import BatteRoyale from './components/gameselect/battleroyale';
 function App() {
   return (
     <Router>
@@ -22,6 +24,8 @@ function App() {
         <Route path='/Spectator' element={<Spectator/>}/>
         <Route path='/leaderboard' element={<LeaderBoard/>}/>
         <Route path='/test' element={<Test/>}/>
+        <Route path='/practice' element={<PracticeMode/>}/>
+        <Route path='/battleroyale' element={<BatteRoyale/>}/>
       </Routes>
     </Router>
   );
