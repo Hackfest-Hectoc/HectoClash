@@ -209,8 +209,8 @@ export default function Spectator() {
       <SomeModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        player1={{ username: player1.username, rating: player1.rating, uid: player1.uid, ratingChanges: gameData.player1ratingchanges }}
-        player2={{ username: player2.username, rating: player2.rating, uid: player2.uid, ratingChanges: gameData.player2ratingchanges }}
+        player1={{ username: player1.username, rating: player1.rating, uid: player1.uid, ratingChange: gameData.player1ratingchanges }}
+        player2={{ username: player2.username, rating: player2.rating, uid: player2.uid, ratingChange: gameData.player2ratingchanges }}
         winner={gameData.winner}
         navigate={navigate}
       />
