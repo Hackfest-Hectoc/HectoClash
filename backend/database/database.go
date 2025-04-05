@@ -70,6 +70,10 @@ func ReturnTop20() []*models.UserDetails {
     return users
 }
 
+func UpdateRatinginMongo(){
+	
+}
+
 
 func CreateLeaderBoardIndex(){
 
