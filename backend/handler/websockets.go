@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 	"time"
-
 	"github.com/Hackfest-Hectoc/HectoClash/backend/models"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/redis/go-redis/v9"
@@ -23,6 +22,16 @@ type resp struct {
 	Message any    `json:"message"`
 }
 
+// type initializeGame struct {
+// 	Title   string `json:"title"`
+// 	message string `json:"message"`
+// }
+
+func UpdatedLeaderboardinRedis() {
+
+		
+
+}
 func PublishMessage(gid string, message resp) error {
 	msg, _ := json.Marshal(message)
 	err := rdb.Publish(ctx, gid, msg).Err()

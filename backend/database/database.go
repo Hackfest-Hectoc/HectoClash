@@ -4,6 +4,7 @@ import (
 	"context"
 	// "fmt"
 	"log"
+	"time"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -35,6 +36,60 @@ func Connect() func() {
 		}
 	}
 }
+
+func ReturnTop20() []*models.UserDetails {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
+    // Define sorting and limit options
+    findOptions := options.Find()
+    findOptions.SetSort(bson.D{{Key: "rating", Value: -1}})
+    findOptions.SetLimit(20)
+	
+    cursor, err := Users.Find(ctx, bson.D{}, findOptions)
+    if err != nil {
+        log.Println("Error fetching top 20 users:", err)
+        return nil
+    }
+    defer cursor.Close(ctx)
+
+    var users []*models.UserDetails
+    for cursor.Next(ctx) {
+        var user models.UserDetails
+        if err := cursor.Decode(&user); err != nil {
+            log.Println("Error decoding user:", err)
+            continue
+        }
+        users = append(users, &user)
+    }
+
+    if err := cursor.Err(); err != nil {
+        log.Println("Cursor error:", err)
+    }
+
+    return users
+}
+
+
+func CreateLeaderBoardIndex(){
+
+	indexModel := mongo.IndexModel{
+        Keys: bson.D{
+            {Key: "userid", Value: -1},    
+            {Key: "username", Value: -1},   
+            {Key: "rating", Value: -1}, 
+        },
+    }
+	_ ,err := Users.Indexes().CreateOne(context.TODO(), indexModel)
+
+	if err!=nil{
+		log.Println("Could not create index")
+		return
+	}
+
+}
+
+
 func GetUserFromID(id string) models.UserDetails{
 	var user models.UserDetails
 	filter := bson.M{"userid": id}

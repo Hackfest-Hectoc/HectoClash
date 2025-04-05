@@ -1,1 +1,7 @@
 package handler
+
+
+func SetLeaderBoardInRedis(){
+
+	
+}

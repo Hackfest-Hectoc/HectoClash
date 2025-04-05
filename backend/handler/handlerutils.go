@@ -3,7 +3,6 @@ package handler
 import (
 	"net/mail"
 	"time"
-
 	"github.com/Hackfest-Hectoc/HectoClash/backend/config"
 	"github.com/Hackfest-Hectoc/HectoClash/backend/database"
 	"github.com/Hackfest-Hectoc/HectoClash/backend/models"
