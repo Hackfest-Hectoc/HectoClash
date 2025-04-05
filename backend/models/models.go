@@ -26,7 +26,7 @@ type Round struct {
 }
 
 type PracticeClient struct {
-	ID               string   `json:gid`
+	ID               string   `json:"gid"`
 	Status           string   `json:"status"`
 	PlayerExpression string   `json:"player1expression"`
 	PlayerSolves     []string `json:"player1solves"`
