@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"math"
 
 	"github.com/Hackfest-Hectoc/HectoClash/backend/database"
@@ -17,6 +18,8 @@ func GiveElo(winner, loser *models.UserDetails) {
 
     winner.Rating += int64(float64(1) * (1.0 - expectedWin))
     loser.Rating += int64(float64(1) * (0.0 - expectedLose))
+    log.Println(winner.Rating)
+    log.Println(loser.Rating)
 
     database.UpdateRatinginMongo(winner, loser)
 }

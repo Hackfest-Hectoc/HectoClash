@@ -93,6 +93,7 @@ func UpdateRatinginMongo(winner, loser *models.UserDetails) {
 		bson.M{"_id": loser.Userid},
 		bson.M{"$set": bson.M{"rating": loser.Rating}},
 	)
+	log.Println("done")
 	if err != nil {
 		log.Printf("Failed to update loser rating: %v", err)
 	}
