@@ -14,9 +14,9 @@ export default function Spectator() {
   const [expression, setExpression] = useState("")
   const [showModal, setShowModal] = useState(false)
   const [gameData, setGameData] = useState({
-    "gid": "",
-    "player_one": "",
-    "player_two": "",
+    "gid": "game123",
+    "player_one": "player123",
+    "player_two": "player456",
     "status": "status",
     "player1expression": "",
     "player2expression": "",
@@ -25,13 +25,13 @@ export default function Spectator() {
     "player1questions": ["0", "0", "0", "0", "0"],
     "player2questions": ["0", "0", "0", "0", "0"],
     "player1curround": 1,
-    "player2curround": 4,
+    "player2curround": 1,
     "player1points": 0,
     "player2points": 0,
     "player1ratingchanges": 0,
     "player2ratingchanges": 0,
     "noofrounds": 5,
-    "winner": ""
+    "winner" : "",
   })
   const [player1, setPlayer1] = useState({ uid: "", username: "Anubhab", rating: 0 })
   const [player2, setPlayer2] = useState({ uid: "", username: "Sagnik", rating: 0 })
@@ -48,27 +48,31 @@ export default function Spectator() {
     return cookieValue ? decodeURIComponent(cookieValue) : "";
   }
   let uid = getCookie("uid")
-
+  const urlParams = new URLSearchParams(window.location.search);
+  const gid = urlParams.get('gid')
 
   useEffect(() => {
-    ws.current = new WebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}/spectate`)
+    ws.current = new WebSocket(`ws://localhost:8000/spectate?gid=${gid}`)
     let interval: ReturnType<typeof setInterval>
-    interval = setInterval(() => getGameData(), 300)
     ws.current.onopen = () => console.log("WebSocket connection opened")
     ws.current.onmessage = (event) => {
       try {
+
         const data = JSON.parse(event.data)
+        console.log(data)
         if (data.title === "gameInit") {
           setGameData(data.message)
           gameInit(data.message)
+          interval = setInterval(() => getGameData(), 300)
 
         }
 
         if (data.title === "gameData") {
           setGameData(data.message)
-          if (data.message.status !== "") {
+          if (data.message.status == "completed") {
             setShowModal(true)
           }
+
         }
       } catch (err) {
         console.error("Error parsing WebSocket message", err)
@@ -109,8 +113,9 @@ export default function Spectator() {
 
   const gameInit = async (data: any) => {
     try {
-      const p1 = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/player/${data.player_one}`)
-      const p2 = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/player/${data.player_two}`)
+      console.log(gameData)
+      const p1 = await axios.get(`http://localhost:8000/api/player/${data.player_one}`)
+      const p2 = await axios.get(`http://localhost:8000/api/player/${data.player_two}`)
       setPlayer1(p1.data)
       setPlayer2(p2.data)
     } catch (err) {
@@ -136,6 +141,7 @@ export default function Spectator() {
         ))}
       </AnimatePresence>
     </div>
+    
   )
 
   const renderPlayer = (player: any, color: string, points: number) => (
@@ -230,7 +236,7 @@ export default function Spectator() {
           <div className="w-full max-w-md bg-transparent backdrop-blur-sm rounded-xl border border-green-400/20 p-4 mt-4">
             <div className="text-center mb-4">
               <div className="text-green-400 text-sm font-semibold mb-1">CURRENT QUESTION</div>
-              {renderQuestion(gameData.player1questions[gameData.player1curround])}
+              {renderQuestion(gameData.player1questions[gameData.player1curround-1])}
             </div>
 
             <motion.div

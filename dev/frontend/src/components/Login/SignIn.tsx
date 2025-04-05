@@ -10,11 +10,10 @@ import { useNavigate } from "react-router-dom";
 import { toast } from 'react-hot-toast';
 
 export default function SignIn() {
-  const Backend_Url = import.meta.env.Backend_Url
   const navigate = useNavigate()
   // State to manage form inputs
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     password: "",
   });
 
@@ -37,7 +36,7 @@ export default function SignIn() {
 
     try {
       // Send form data using Axios
-      const response = await axios.post(`${Backend_Url}/signin`, formData, {withCredentials: true});
+      const response = await axios.post(`http://localhost:8000/api/login`, formData, {withCredentials: true});
       console.log("Response:", response.data);
 
       // Handle success (e.g., redirect or show a success message)
@@ -46,7 +45,7 @@ export default function SignIn() {
       navigate("/home", { replace: true }); // Redirect to the "/welcome" page
     } catch (error) {
       console.error("Error signing in:", error);
-     if(!formData.name || !formData.password){
+     if(!formData.username || !formData.password){
       toast.error("All fields are mandatory")
      }else{
 
@@ -54,7 +53,7 @@ export default function SignIn() {
      }
       // Handle error (e.g., show an error message)
       setFormData({
-        name: "",
+        username: "",
         password: "",
       })
       setButtonText("Sign In");
@@ -78,9 +77,9 @@ export default function SignIn() {
           <form className="mt-12 flex flex-col gap-5 items-center max-sm:w-full">
             <FormInput
               type="text"
-              name="name"
+              name="username"
               placeholder="Name"
-              value={formData.name}
+              value={formData.username}
               onChange={handleChange} // Handle input changes
               className="h-[45px] max-w-[380px] w-full px-4 py-2 text-xl rounded-[9px] border-[3px] border-gray-700 border-width-2 bg-zinc-900 text-white focus:outline-none focus:ring-2 focus:ring-green-400"
             />

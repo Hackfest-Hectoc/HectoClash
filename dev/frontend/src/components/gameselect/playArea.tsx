@@ -54,11 +54,11 @@ export default function MathGame() {
 
     return cookieValue ? decodeURIComponent(cookieValue) : "";
   }
-
+  uid = getCookie("uid")
   // Initialize WebSocket connection and game data
   useEffect(() => {
-    uid = getCookie("uid")
-    ws.current = new WebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}/ws`)
+
+    ws.current = new WebSocket(`ws://localhost:8000/ws`)
     let interval: ReturnType<typeof setInterval>
 
     ws.current.onopen = () => {
@@ -111,7 +111,7 @@ export default function MathGame() {
 
     ws.current.onclose = () => {
       console.log("WebSocket connection closed")
-      navigate("/home")
+      // navigate("/home")
     }
 
     return () => {
@@ -171,10 +171,10 @@ export default function MathGame() {
 
   const gameInit = async (data: any) => {
     try {
-      const response1 = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/player/${data.player_one}`)
+      const response1 = await axios.get(`http://localhost:8000/api/player/${data.player_one}`)
       setPlayer1(response1.data)
 
-      const response2 = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/player/${data.player_two}`)
+      const response2 = await axios.get(`http://localhost:8000/api/player/${data.player_two}`)
       setPlayer2(response2.data)
     } catch (error) {
       console.error("Error fetching player data:", error)
@@ -448,7 +448,7 @@ const navigate = useNavigate()
                           animate={{ opacity: 1 }}
                           className="flex items-center gap-2"
                         >
-                          <span className="font-mono text-green-100 ml-2">{uid == player1.uid ? gameData.player1solves[index - 1] : gameData.player2solves[index - 1]}</span>
+                          <span className="font-mono text-green-100 ml-2">{uid == player1.uid ? gameData.player1solves[index] : gameData.player2solves[index]}</span>
                         </motion.div>
                       ) : (
                         <span className="font-mono text-gray-400">------</span>
