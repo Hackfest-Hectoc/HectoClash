@@ -1,7 +1,28 @@
 package handler
 
+import (
+	"encoding/json"
+	"log"
+	"time"
 
-func SetLeaderBoardInRedis(){
+	"github.com/Hackfest-Hectoc/HectoClash/backend/database"
+	"github.com/Hackfest-Hectoc/HectoClash/backend/models"
+	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
+)
 
-	
+func UpdatedLeaderboardinRedis(c *fiber.Ctx) error {
+
+	s, err := rdb.Get(ctx, LEADER_BOARD).Result()
+	if err == redis.Nil {
+		marsheledLead, err := json.Marshal(database.ReturnTop20())
+		if err != nil {
+			log.Println("could not marsh")
+		}
+		rdb.Set(ctx, LEADER_BOARD, marsheledLead, 60*time.Second)
+	}
+	var user []models.UserDetails
+
+	err = json.Unmarshal([]byte(s), &user)
+	return (c.Status(fiber.StatusOK).JSON(user))
 }

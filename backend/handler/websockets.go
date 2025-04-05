@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"log"
 	"time"
+
 	"github.com/Hackfest-Hectoc/HectoClash/backend/models"
 	"github.com/gofiber/contrib/websocket"
+
 	"github.com/redis/go-redis/v9"
 )
 
@@ -14,7 +16,8 @@ var rdb *redis.Client
 var ctx = context.TODO()
 
 const (
-	QUEUE_KEY = "matchmaking_queue"
+	QUEUE_KEY    = "matchmaking_queue"
+	LEADER_BOARD = "leaderboard"
 )
 
 type resp struct {
@@ -27,11 +30,6 @@ type resp struct {
 // 	message string `json:"message"`
 // }
 
-func UpdatedLeaderboardinRedis() {
-
-		
-
-}
 func PublishMessage(gid string, message resp) error {
 	msg, _ := json.Marshal(message)
 	err := rdb.Publish(ctx, gid, msg).Err()
