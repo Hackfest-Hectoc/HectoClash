@@ -51,7 +51,7 @@ export default function Spectator() {
 
 
   useEffect(() => {
-    ws.current = new WebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}/ws`)
+    ws.current = new WebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}/spectate`)
     let interval: ReturnType<typeof setInterval>
     interval = setInterval(() => getGameData(), 300)
     ws.current.onopen = () => console.log("WebSocket connection opened")
