@@ -28,8 +28,9 @@ type Round struct {
 type PracticeClient struct {
 	ID               string   `json:"gid"`
 	Status           string   `json:"status"`
-	PlayerExpression string   `json:"player1expression"`
+	// PlayerExpression string   `json:"player1expression"`
 	PlayerSolves     []string `json:"player1solves"`
+	PlayerQuestions  []string `json:"playerquestions"`
 	Questions        []string `json:"questions"`
 	PlayerCurrRound  int64    `json:"player1curround"`
 	NoofRounds       int64    `json:"noofrounds"`

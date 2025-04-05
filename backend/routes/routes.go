@@ -20,5 +20,6 @@ func SetupRoutes(app *fiber.App) {
 	app.Get("/api/leaderboard", handler.UpdateLeaderboardinRedis).Name("Get Leaderboard")
 	app.Get("/spectate", websocket.New(handler.Spectate)).Name("Spectate Handler")
 	app.Get("/ws", websocket.New(handler.WebSocketHandler)).Name("Websocket handler")
+	app.Get("/pracmode", websocket.New(handler.Practicehandler)).Name("PracMode handler")
 }
 
