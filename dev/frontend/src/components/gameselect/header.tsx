@@ -22,8 +22,8 @@ export default function Header() {
 
     const headerVariants = {
         hidden: { y: -100, opacity: 0 },
-        visible: { 
-            y: 0, 
+        visible: {
+            y: 0,
             opacity: 1,
             transition: { duration: 0.6, ease: "easeOut" }
         }
@@ -33,8 +33,8 @@ export default function Header() {
     return (
         <div className="w-full ">
 
-                <motion.div 
-                    className="w-full h-[88px] bg-green-300/20  backdrop-blur-sm  shadow-lg shadow-green-300/20 flex flex-wrap items-center justify-between px-12  pl-20 max-md:px-8 border-r-2 border-b-[4px]  border-green-300/20 rounded-b-md"
+                <motion.div
+                    className="w-full h-[11vh] bg-green-300/20  backdrop-blur-sm  shadow-lg shadow-green-300/20 flex flex-wrap items-center justify-between px-12  pl-20 max-md:px-8 border-r-2 border-b-[4px]  border-green-300/20 rounded-b-md"
                     variants={headerVariants}
                     initial="hidden"
                     animate="visible"
@@ -48,7 +48,7 @@ export default function Header() {
                             alt="Logo"
                             src="https://c.animaapp.com/fOFXwWPz/img/image-5@2x.png"
                         />
-                        <motion.p 
+                        <motion.p
                             className="text-white text-sm"
                             whileHover={{ scale: 1.1 }}
                         >
@@ -65,7 +65,7 @@ export default function Header() {
                             alt="Players"
                             src="https://c.animaapp.com/fOFXwWPz/img/image-11@2x.png"
                         />
-                        <motion.p 
+                        <motion.p
                             className="text-white text-sm"
                             whileHover={{ scale: 1.1 }}
                         >
@@ -82,7 +82,7 @@ export default function Header() {
                             alt="Logo"
                             src="https://c.animaapp.com/fOFXwWPz/img/image-5@2x.png"
                         />
-                        <motion.p 
+                        <motion.p
                             className="text-white text-sm"
                             whileHover={{ scale: 1.1 }}
                         >
