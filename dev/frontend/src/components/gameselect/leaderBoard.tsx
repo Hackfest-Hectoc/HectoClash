@@ -50,9 +50,9 @@ export default function Leaderboard() {
     setLeaderboardData(sortedData)
   }, [sortBy, sortDirection])
 
-  // const getleaderboard = async ()=>{
-  //   const response = await axios.get('api/leaderboard')
-  // }
+  const getleaderboard = async ()=>{
+    const response = await axios.get()
+  }
 
   // Function to handle sorting
   const handleSort = (criteria: "rank" | "score" | "name") => {
