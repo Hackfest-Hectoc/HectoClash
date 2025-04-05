@@ -10,9 +10,9 @@ type User struct {
 }
 
 type UserDetails struct {
-	Userid   string `bson:"userid"`
-	Username string `bson:"username"`
-	Rating   int64  `bson:"rating"`
+	Userid   string `bson:"userid" json:"userid"`
+	Username string `bson:"username" json:"username"`
+	Rating   int64  `bson:"rating" json:"rating"`
 }
 
 type Challenge struct {

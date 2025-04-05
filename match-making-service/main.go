@@ -37,7 +37,6 @@ func MatchMakingService() {
 		}
 		if count > 1 {
 			log.Println(count)
-			log.Println(count)
 			topTwo, err := rdb.ZPopMax(ctx, QUEUE_KEY, 2).Result()
 			if err == redis.Nil {
 				continue
