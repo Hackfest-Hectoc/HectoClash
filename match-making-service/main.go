@@ -61,8 +61,6 @@ func MatchMakingService() {
 			gameState.Status = "starting"
 			gameState.Player1CurrRound = 1
 			gameState.Player2CurrRound = 1
-			gameState.Player1LastSubmission = time.Now().Unix()
-			gameState.Player2LastSubmission = time.Now().Unix()
 			gameState.Questions = GenerateHectoc(5)
 			gameState.NoofRounds = 5
 			GameClient.ID = gid
@@ -74,7 +72,6 @@ func MatchMakingService() {
 			GameClient.NoofRounds = 5
 			gamestatejson, _ := json.Marshal(gameState)
 			gameclientjson, _ := json.Marshal(GameClient)
-
 
 			rdb.Set(ctx, gid,gamestatejson, time.Minute*10)
 			rdb.Set(ctx, gid+"gameclient", gameclientjson, time.Minute*10)
