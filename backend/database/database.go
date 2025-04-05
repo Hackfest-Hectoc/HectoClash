@@ -70,10 +70,34 @@ func ReturnTop20() []*models.UserDetails {
     return users
 }
 
-func UpdateRatinginMongo(){
-	
-}
+func UpdateRatinginMongo(winner, loser *models.UserDetails) {
 
+	// collection := client.Database("hectoc_db").Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+
+
+	_, err := Users.UpdateOne(
+		ctx,
+		bson.M{"_id": winner.Userid},
+		bson.M{"$set": bson.M{"rating": winner.Rating}},
+	)
+	if err != nil {
+		log.Printf("Failed to update winner rating: %v", err)
+	}
+
+	// Update loser rating
+	_, err = Users.UpdateOne(
+		ctx,
+		bson.M{"_id": loser.Userid},
+		bson.M{"$set": bson.M{"rating": loser.Rating}},
+	)
+	if err != nil {
+		log.Printf("Failed to update loser rating: %v", err)
+	}
+}
+	
 
 func CreateLeaderBoardIndex(){
 
