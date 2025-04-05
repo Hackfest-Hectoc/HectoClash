@@ -153,7 +153,7 @@ func WebSocketHandler(c *websocket.Conn) {
 	Game.Player1Questions[count] = questions[count]
 	Game.Player2Questions[count] = questions[count]
 	gjson, _ := json.Marshal(Game)
-	rdb.Set(ctx, gid, gjson, time.Minute*10)
+	rdb.SetXX(ctx, gid, gjson, time.Minute*10)
 
 	if err := c.WriteJSON(models.Response{Topic: "question", Message: models.Round{Number: count + 1, Question: question}}); err != nil {
 		log.Println(err)
@@ -226,7 +226,7 @@ func WebSocketHandler(c *websocket.Conn) {
 						Game.Status = "completed"
 						Game.Winner = uid
 						gjson, _ := json.Marshal(Game)
-						rdb.Set(ctx, gid, gjson, time.Minute*10)
+						rdb.SetXX(ctx, gid, gjson, time.Minute*10)
 						database.AddGameToPlayer(Game.Playerone, gid)
 						database.AddGameToPlayer(Game.Playertwo, gid)
 						winner := database.GetUserFromID(uid)
@@ -261,7 +261,7 @@ func WebSocketHandler(c *websocket.Conn) {
 				Game.Player2Expression = message.Message.(string)
 			}
 			gjson, _ := json.Marshal(Game)
-			rdb.Set(ctx, gid, gjson, time.Minute*10)
+			rdb.SetXX(ctx, gid, gjson, time.Minute*10)
 			log.Println("expr")
 		case "gameData":
 			gamedetails, err = rdb.Get(ctx, gid).Result()
