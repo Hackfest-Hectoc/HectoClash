@@ -80,7 +80,7 @@ func UpdateRatinginMongo(winner, loser *models.UserDetails) {
 
 	_, err := Users.UpdateOne(
 		ctx,
-		bson.M{"_id": winner.Userid},
+		bson.M{"userid": winner.Userid},
 		bson.M{"$set": bson.M{"rating": winner.Rating}},
 	)
 	if err != nil {
@@ -90,7 +90,7 @@ func UpdateRatinginMongo(winner, loser *models.UserDetails) {
 	// Update loser rating
 	_, err = Users.UpdateOne(
 		ctx,
-		bson.M{"_id": loser.Userid},
+		bson.M{"userid": loser.Userid},
 		bson.M{"$set": bson.M{"rating": loser.Rating}},
 	)
 	log.Println("done")

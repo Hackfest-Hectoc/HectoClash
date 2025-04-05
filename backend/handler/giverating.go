@@ -16,8 +16,8 @@ func GiveElo(winner, loser *models.UserDetails) {
     expectedWin := ExpectedScore(winner.Rating, loser.Rating)
     expectedLose := ExpectedScore(loser.Rating, winner.Rating)
 
-    winner.Rating += int64(float64(1) * (1.0 - expectedWin))
-    loser.Rating += int64(float64(1) * (0.0 - expectedLose))
+    winner.Rating += int64(float64(2) * (1.0 - expectedWin))
+    loser.Rating += int64(float64(2) * (0.0 - expectedLose))
     log.Println(winner.Rating)
     log.Println(loser.Rating)
 
