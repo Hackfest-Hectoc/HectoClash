@@ -7,76 +7,7 @@ import Navbar from '../navbar/navbar';
 import axios from 'axios';
 
 // Initial dummy data
-let playerData = {
-  username: "ProGamer123",
-  userid: "2323",
-  rating: 1750,
-  time: 120,
-  solves: 50,
-  wrongsolves: 10,
-  totalwins: 30,
-  games: [
-    {
-      id: 1,
-      player_one_id: "2323",
-      player_two_id: "opponent1",
-      winner_id: "2323",
-      timestamp: new Date().getTime(),
-      player1questions: [
-        "What is the time complexity of QuickSort?",
-        "Explain how a hash table works",
-      ],
-      player1solves: [
-        "O(n log n) average case, O(n²) worst case",
-        "Hash tables use a hash function to map keys to array indices",
-      ],
-      player2questions: [
-        "What is the time complexity of QuickSort?",
-        "Explain how a hash table works",
-      ],
-      player2solves: [
-        "O(n log n) average case, O(n²) worst case",
-        "Hash tables use a hash function to map keys to array indices",
-      ]
-    },
-    {
-      id: 2,
-      player_one_id: "opponent2",
-      player_two_id: "2323",
-      winner_id: "opponent2",
-      timestamp: new Date().getTime() - 86400000, // 1 day ago
-      questions: [
-        "What is recursion?",
-        "Explain merge sort",
-        "What is a binary tree?",
-        "How does a stack work?",
-        "What is a queue?"
-      ],
-      solutions: [
-        "A function that calls itself",
-        "Divide and conquer sorting algorithm",
-        "Tree with at most 2 children per node",
-        "LIFO data structure",
-        "FIFO data structure"
-      ]
-    }
-  ],
-  ratings: [
-    { timestamp: new Date().getTime() - 172800000, rating: 1700 }, // 2 days ago
-    { timestamp: new Date().getTime() - 86400000, rating: 1725 },  // 1 day ago
-    { timestamp: new Date().getTime(), rating: 1750 }              // now
-  ]
-};
 
-const solutionsData = [
-  { name: 'Correct', value: playerData.solves, color: '#4ade80' },
-  { name: 'Wrong', value: playerData.wrongsolves, color: '#f87171' }
-];
-
-const matchesData = [
-  { name: 'Wins', value: playerData.totalwins, color: '#4ade80' },
-  { name: 'Losses', value: playerData.games.length - playerData.totalwins, color: '#f87171' }
-];
 
 function StatCard({ icon: Icon, title, value, color = "green" }) {
   return (
@@ -165,6 +96,75 @@ function Test() {
       ?.split('=')[1];
     return cookieValue ? decodeURIComponent(cookieValue) : "";
   }
+  const [playerData, setPlayerData] = useState({
+    username: "ProGamer123",
+    userid: "2323",
+    rating: 1750,
+    time: 120,
+    solves: 50,
+    wrongsolves: 10,
+    totalwins: 30,
+    games: [
+      {
+        id: 1,
+        player_one_id: "2323",
+        player_two_id: "opponent1",
+        winner_id: "2323",
+        timestamp: new Date().getTime(),
+        player1questions: [
+          "What is the time complexity of QuickSort?",
+          "Explain how a hash table works",
+        ],
+        player1solves: [
+          "O(n log n) average case, O(n²) worst case",
+          "Hash tables use a hash function to map keys to array indices",
+        ],
+        player2questions: [
+          "What is the time complexity of QuickSort?",
+          "Explain how a hash table works",
+        ],
+        player2solves: [
+          "O(n log n) average case, O(n²) worst case",
+          "Hash tables use a hash function to map keys to array indices",
+        ]
+      },
+      {
+        id: 2,
+        player_one_id: "opponent2",
+        player_two_id: "2323",
+        winner_id: "opponent2",
+        timestamp: new Date().getTime() - 86400000, // 1 day ago
+        questions: [
+          "What is recursion?",
+          "Explain merge sort",
+          "What is a binary tree?",
+          "How does a stack work?",
+          "What is a queue?"
+        ],
+        solutions: [
+          "A function that calls itself",
+          "Divide and conquer sorting algorithm",
+          "Tree with at most 2 children per node",
+          "LIFO data structure",
+          "FIFO data structure"
+        ]
+      }
+    ],
+    ratings: [
+      { timestamp: new Date().getTime() - 172800000, rating: 1700 }, // 2 days ago
+      { timestamp: new Date().getTime() - 86400000, rating: 1725 },  // 1 day ago
+      { timestamp: new Date().getTime(), rating: 1750 }              // now
+    ]
+    });
+
+    const solutionsData = [
+      { name: 'Correct', value: playerData.solves, color: '#4ade80' },
+      { name: 'Wrong', value: playerData.wrongsolves, color: '#f87171' }
+    ];
+    const matchesData = [
+      { name: 'Wins', value: playerData.totalwins, color: '#4ade80' },
+      { name: 'Losses', value: playerData.games.length - playerData.totalwins, color: '#f87171' }
+    ];
 
   useEffect(() => {
     const uid = getCookie("uid");
@@ -172,17 +172,19 @@ function Test() {
     
     const fetchPlayerInfo = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/profile/${uid}`);
+        const response = await axios.get(`http://localhost:8000/api/player/profile/${uid}`);
         // Update player data with API response
-        playerData = response.data;
+        // playerData = response.data;
+        // console.log(playerData)
         
         // Update statistics
-        solutionsData[0].value = playerData.solves;
-        solutionsData[1].value = playerData.wrongsolves;
+        setPlayerData(response.data);
+        // solutionsData[0].value = playerData.solves;
+        // solutionsData[1].value = playerData.wrongsolves;
         
-        const totalGames = playerData.games.length;
-        matchesData[0].value = playerData.totalwins;
-        matchesData[1].value = totalGames - playerData.totalwins;
+        // const totalGames = playerData.games.length;
+        // matchesData[0].value = playerData.totalwins;
+        // matchesData[1].value = totalGames - playerData.totalwins;
       } catch (error) {
         console.error('Error fetching player info:', error);
         // Keep using dummy data if API fails
