@@ -138,7 +138,7 @@ const GameCompletionModal = ({ isOpen, onClose, player1, player2, winner,uid,nav
             className="mt-5 text-2xl font-bold rounded-xl border-b-4 border-solid bg-green-300 cursor-pointer border-[none] border-b-green-600 h-[55px] text-black w-[201px] max-sm:w-full max-sm:max-w-[411px] hover:bg-green-600 transition-colors"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => window.location.assign({page})}
+            onClick={() => window.location.assign(`/${page}`)}
           >
             Play Again 
           </motion.button>
