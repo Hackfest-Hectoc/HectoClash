@@ -11,6 +11,28 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+func GetProfilePageStuff(c *fiber.Ctx) error{
+
+	id := c.Params("id")
+	user := database.GetprofilefromMongo(id)
+	// userw , _:= database.GetGamesWithWins(c.Params("id"))
+	// v:= {id:user,3:userw}
+
+	return c.Status(fiber.StatusOK).JSON(user)
+}
+func GamesAll(c *fiber.Ctx) error{
+
+	// id := c.Params("id")
+	user,  err := database.GetGamesMongo()
+	if(err!=nil){
+		log.Println(err)
+	}
+	// userw , _:= database.GetGamesWithWins(c.Params("id"))
+	// v:= {id:user,3:userw}
+
+	return c.Status(fiber.StatusOK).JSON(user)
+}
+
 func UpdateLeaderboardinRedis(c *fiber.Ctx) error {
 
 	s, err := rdb.Get(ctx, LEADER_BOARD).Result()
