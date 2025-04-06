@@ -23,7 +23,7 @@ export default function GameSelect() {
                 }
             }
         };
-    
+
         const itemVariants = {
             hidden: { y: 50, opacity: 0 },
             visible: {
@@ -47,19 +47,19 @@ export default function GameSelect() {
                     <Header/>
 
                 {/* Game Modes */}
-                <motion.div 
+                <motion.div
                     className="flex flex-wrap justify-center items-center content-center gap-8 m-8 h-full mx-4"
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
                 >
                     {/* YOU VS BOT */}
-                    <motion.div 
+                    <motion.div
                         className="w-[382px] h-[230px] rounded-[19px] overflow-hidden bg-gradient-to-r from-[#d7682c] to-[#983703] flex flex-col items-center justify-center text-center max-lg:w-[300px] max-lg:h-[200px] max-sm:w-[250px] max-sm:h-[180px] cursor-pointer shadow-lg hover:shadow-2xl transition-shadow"
                         variants={itemVariants}
                         whileHover="hover"
                         whileTap="tap"
-                        onClick={() => handleGameModeClick('you-vs-bot')}
+                        onClick={() => handleGameModeClick('practice')}
                     >
                         <motion.img
                             whileHover={{ scale: 1.2 }}
@@ -73,7 +73,7 @@ export default function GameSelect() {
                     </motion.div>
 
                     {/* ONLINE DUELS */}
-                    <motion.div 
+                    <motion.div
                         className="w-[377px] h-[230px] rounded-[19px] overflow-hidden bg-gradient-to-r from-[#d72cb2] to-[#54074e] flex flex-col items-center justify-center text-center max-lg:w-[300px] max-lg:h-[200px] max-sm:w-[250px] max-sm:h-[180px] cursor-pointer shadow-lg hover:shadow-2xl transition-shadow"
                         variants={itemVariants}
                         whileHover="hover"
@@ -92,12 +92,12 @@ export default function GameSelect() {
                     </motion.div>
 
                     {/* BATTLE ROYALE */}
-                    <motion.div 
+                    <motion.div
                         className="w-[371px] h-[227px] rounded-[19px] overflow-hidden bg-gradient-to-r from-[#2cd773] to-[#0c5f31] flex flex-col items-center justify-center text-center max-lg:w-[300px] max-lg:h-[200px] max-sm:w-[250px] max-sm:h-[180px] cursor-pointer shadow-lg hover:shadow-2xl transition-shadow"
                         variants={itemVariants}
                         whileHover="hover"
                         whileTap="tap"
-                        onClick={() => handleGameModeClick('battle-royale')}
+                        onClick={() => handleGameModeClick('battleroyale')}
                     >
                         <motion.img
                             whileHover={{ scale: 1.2 }}

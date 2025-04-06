@@ -14,7 +14,7 @@ import BatteRoyale from './components/gameselect/battleroyale';
 function App() {
   return (
     <Router>
-       <Toaster position="top-right" reverseOrder={false} />
+       <Toaster position="bottom-right" reverseOrder={false} />
       <Routes>
         <Route path="/signup" element={<SignUpPage />} />
         <Route path='/signin' element={<SignIn />}/>
