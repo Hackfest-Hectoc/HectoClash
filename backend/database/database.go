@@ -185,11 +185,11 @@ func UpdateRatinginMongo(winner, loser *models.UserDetails) {
 	// Create time-stamped rating entries
 	winnerRatingEntry := bson.M{
 		"rating":    winner.Rating,
-		"timestamp": time.Now(),
+		"timestamp": time.Now().Unix(),
 	}
 	loserRatingEntry := bson.M{
 		"rating":    loser.Rating,
-		"timestamp": time.Now(),
+		"timestamp": time.Now().Unix(),
 	}
 
 	// Update winner: push new rating to ratings array
