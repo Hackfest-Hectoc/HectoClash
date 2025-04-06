@@ -17,7 +17,7 @@ const operators = [
   { id: "op3", value: "*" },
   { id: "op4", value: "^" },
   { id: "op5", value: "+" },
-  { id: "op6", value: "_" },
+  { id: "op6", value: "-" },
   { id: "op7", value: "/" },
 ]
 
