@@ -213,10 +213,10 @@ func CreateLeaderBoardIndex(){
 func GetUserFromID(id string) models.UserDetails{
 	var user models.UserDetails
 	filter := bson.M{"userid": id}
+	log.Println(id)
 	err := Users.FindOne(context.TODO(), filter).Decode(&user)
-
 	if err!=nil{
-		log.Println("Could not fetch user data from mongo OR user does not exist")
+		log.Println(err)
 		return models.UserDetails{}
 	}
 	return user
@@ -243,7 +243,8 @@ func Register(user *models.User) bool {
 	defaultRating.Rating = 800
 	defaultRating.Timestamp = time.Now().Unix()
 	user.Userid = uuid.New().String()
-	user.Rating = append(user.Rating, defaultRating)
+	user.Ratings = append(user.Ratings, defaultRating)
+	user.Rating =800
 	
 	if _, err := Users.InsertOne(context.TODO(), user); err != nil {
 		log.Println(err)

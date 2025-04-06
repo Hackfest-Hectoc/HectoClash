@@ -6,8 +6,8 @@ type Profile struct {
 }
 
 type RatingEntry struct {
-	Rating    float64   `bson:"ratingval" json:"ratingval"`
-	Timestamp int64 `bson:"timestamp" json:"timestamp"`
+	Rating    float64 `bson:"ratingval" json:"ratingval"`
+	Timestamp int64   `bson:"timestamp" json:"timestamp"`
 }
 type User struct {
 	Username string        `bson:"username"`
@@ -15,13 +15,14 @@ type User struct {
 	Email    string        `bson:"email"`
 	Password string        `bson:"password"`
 	Games    []string      `bson:"games"`
-	Rating   []RatingEntry `bson:"rating"`
+	Ratings  []RatingEntry `bson:"ratings"`
+	Rating   int64         `bson:"rating"`
 }
 
 type UserDetails struct {
-	Userid   string `bson:"userid" json:"uid"`
-	Username string `bson:"username" json:"username"`
-	Rating   int64  `bson:"rating" json:"rating"`
+	Userid   string        `bson:"userid" json:"uid"`
+	Username string        `bson:"username" json:"username"`
+	Rating   int64         `bson:"rating" json:"rating"`
 }
 
 type Challenge struct {
@@ -38,7 +39,6 @@ type GameAndWin struct {
 	Opponent string `json:"opponent"`
 	Win      int    `json:"win"`
 }
-
 
 type PracticeClient struct {
 	ID     string `json:"gid"`
