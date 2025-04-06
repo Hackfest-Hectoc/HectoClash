@@ -70,6 +70,24 @@ export default function GameSelect() {
                         </p>
                     </motion.div>
 
+                    <motion.div 
+                        className="w-[371px] h-[227px] rounded-[19px] overflow-hidden bg-gradient-to-r from-[#2cd773] to-[#0c5f31] flex flex-col items-center justify-center text-center max-lg:w-[300px] max-lg:h-[200px] max-sm:w-[250px] max-sm:h-[180px] cursor-pointer shadow-lg hover:shadow-2xl transition-shadow"
+                        variants={itemVariants}
+                        whileHover="hover"
+                        whileTap="tap"
+                        onClick={() => handleGameModeClick('practice')}
+                    >
+                        <motion.img
+                            whileHover={{ scale: 1.2 }}
+                            className="w-[69px] h-[76px] max-lg:w-[50px] max-lg:h-[50px] max-sm:w-[40px] max-sm:h-[40px]"
+                            alt="Vector"
+                            src="https://c.animaapp.com/fOFXwWPz/img/vector-2.svg"
+                        />
+                        <p className="font-extrabold text-white text-[35px] mt-4 max-lg:text-[28px] max-sm:text-[20px]">
+                            Practice
+                        </p>
+                    </motion.div>
+
                     {/* ONLINE DUELS */}
                     <motion.div 
                         className="w-[377px] h-[230px] rounded-[19px] overflow-hidden bg-gradient-to-r from-[#d72cb2] to-[#54074e] flex flex-col items-center justify-center text-center max-lg:w-[300px] max-lg:h-[200px] max-sm:w-[250px] max-sm:h-[180px] cursor-pointer shadow-lg hover:shadow-2xl transition-shadow"
@@ -95,7 +113,7 @@ export default function GameSelect() {
                         variants={itemVariants}
                         whileHover="hover"
                         whileTap="tap"
-                        onClick={() => handleGameModeClick('battle-royale')}
+                        onClick={() => handleGameModeClick('battleroyale')}
                     >
                         <motion.img
                             whileHover={{ scale: 1.2 }}
