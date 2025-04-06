@@ -8,6 +8,7 @@ import MathGame from './components/gameselect/playArea';
 import Spectator from './components/gameselect/spectator';
 import LeaderBoard from './components/gameselect/leaderBoard';
 import Test from './components/gameselect/test';
+import Test2  from './components/gameselect/duelsdragdrop';
 
 function App() {
   return (
@@ -20,7 +21,8 @@ function App() {
         <Route path='/gamearea' element={<MathGame/>}/>
         <Route path='/Spectator' element={<Spectator/>}/>
         <Route path='/leaderboard' element={<LeaderBoard/>}/>
-        <Route path='/test' element={<Test/>}/>
+        <Route path='/profile' element={<Test/>}/>
+        <Route path='/gamearea2' element={<Test2/>}/>
       </Routes>
     </Router>
   );

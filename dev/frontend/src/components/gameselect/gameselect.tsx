@@ -6,6 +6,7 @@ import Navbar from "../navbar/navbar";
 
 export default function GameSelect() {
 
+
     const navigate = useNavigate();
 
 
@@ -44,9 +45,6 @@ export default function GameSelect() {
         <Navbar/>
         <div className="w-full h-screen overflow-hidden  border border-solid border-black">
             <div className="h-screen  flex flex-col items-center">
-                    <Header/>
-
-                {/* Game Modes */}
                 <motion.div 
                     className="flex flex-wrap justify-center items-center content-center gap-8 m-8 h-full mx-4"
                     variants={containerVariants}
@@ -59,7 +57,7 @@ export default function GameSelect() {
                         variants={itemVariants}
                         whileHover="hover"
                         whileTap="tap"
-                        onClick={() => handleGameModeClick('you-vs-bot')}
+                        onClick={() => handleGameModeClick('gamearea2')}
                     >
                         <motion.img
                             whileHover={{ scale: 1.2 }}
@@ -68,7 +66,7 @@ export default function GameSelect() {
                             src="https://c.animaapp.com/fOFXwWPz/img/vector.svg"
                         />
                         <p className="font-extrabold text-white text-[35px] mt-4 max-lg:text-[28px] max-sm:text-[20px]">
-                            YOU VS BOT
+                            Duels Drag and Drop
                         </p>
                     </motion.div>
 
