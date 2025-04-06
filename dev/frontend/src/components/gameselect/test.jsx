@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { User, Trophy, Clock, Target, CheckCircle, XCircle, Zap, Award, ChevronRight, X } from 'lucide-react';
 import { format } from 'date-fns';
 import Navbar from '../navbar/navbar';
-import { div } from 'framer-motion/client';
 import axios from 'axios';
 
-// Mock data with Unix timestamps
+// Initial dummy data
 let playerData = {
   username: "ProGamer123",
   userid: "2323",
@@ -16,19 +15,67 @@ let playerData = {
   solves: 50,
   wrongsolves: 10,
   totalwins: 30,
+  games: [
+    {
+      id: 1,
+      player_one_id: "2323",
+      player_two_id: "opponent1",
+      winner_id: "2323",
+      timestamp: new Date().getTime(),
+      player1questions: [
+        "What is the time complexity of QuickSort?",
+        "Explain how a hash table works",
+      ],
+      player1solves: [
+        "O(n log n) average case, O(n²) worst case",
+        "Hash tables use a hash function to map keys to array indices",
+      ],
+      player2questions: [
+        "What is the time complexity of QuickSort?",
+        "Explain how a hash table works",
+      ],
+      player2solves: [
+        "O(n log n) average case, O(n²) worst case",
+        "Hash tables use a hash function to map keys to array indices",
+      ]
+    },
+    {
+      id: 2,
+      player_one_id: "opponent2",
+      player_two_id: "2323",
+      winner_id: "opponent2",
+      timestamp: new Date().getTime() - 86400000, // 1 day ago
+      questions: [
+        "What is recursion?",
+        "Explain merge sort",
+        "What is a binary tree?",
+        "How does a stack work?",
+        "What is a queue?"
+      ],
+      solutions: [
+        "A function that calls itself",
+        "Divide and conquer sorting algorithm",
+        "Tree with at most 2 children per node",
+        "LIFO data structure",
+        "FIFO data structure"
+      ]
+    }
+  ],
+  ratings: [
+    { timestamp: new Date().getTime() - 172800000, rating: 1700 }, // 2 days ago
+    { timestamp: new Date().getTime() - 86400000, rating: 1725 },  // 1 day ago
+    { timestamp: new Date().getTime(), rating: 1750 }              // now
+  ]
 };
-const gameData=[]
 
-
-// Prepare data for pie charts
 const solutionsData = [
-  { name: 'Correct', value: playerData.stats.rightSubs, color: '#4ade80' },
-  { name: 'Wrong', value: playerData.stats.wrongSubs, color: '#f87171' }
+  { name: 'Correct', value: playerData.solves, color: '#4ade80' },
+  { name: 'Wrong', value: playerData.wrongsolves, color: '#f87171' }
 ];
 
 const matchesData = [
-  { name: 'Wins', value: playerData.stats.wins, color: '#4ade80' },
-  { name: 'Losses', value: playerData.stats.losses, color: '#f87171' }
+  { name: 'Wins', value: playerData.totalwins, color: '#4ade80' },
+  { name: 'Losses', value: playerData.games.length - playerData.totalwins, color: '#f87171' }
 ];
 
 function StatCard({ icon: Icon, title, value, color = "green" }) {
@@ -47,42 +94,24 @@ function StatCard({ icon: Icon, title, value, color = "green" }) {
   );
 }
 
-function GameHistoryModal({ game, onClose }) {
+function GameHistoryModal({ game, onClose, currentUserId }) {
+  const isPlayerOne = game.player_one_id === currentUserId;
+  const opponent = isPlayerOne ? game.player_two_id : game.player_one_id;
+  const isWinner = game.winner_id === currentUserId;
 
-  useEffect(() => {
-    playerData=plafetchplayerinfo()
-  }, []);
-
-  function getCookie(name) {
-    const cookieValue = document.cookie
-      .split('; ')
-      .find(row => row.startsWith(name + '='))
-      ?.split('=')[1];
-
-    return cookieValue ? decodeURIComponent(cookieValue) : "";
-  }
-  let uid = getCookie("uid")
-  const fetchplayerinfo = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/api/profile/${uid}`);
-      console.log(response.data);
-    } catch (error) {
-      console.error('Error fetching player info:', error);
-    }
-  };
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0  backdrop-blur-sm flex items-center justify-center z-50"
+      className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="border border-green-400/30 rounded-xl p-6 max-w-2xl w-full mx-4"
+        className="border border-green-400/30 rounded-xl p-6 max-w-4xl w-full mx-4 bg-black/80"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
@@ -94,20 +123,30 @@ function GameHistoryModal({ game, onClose }) {
 
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <div className="text-green-400">vs {game.opponent}</div>
-            <div className={`px-3 py-1 rounded-full ${game.result === 'win' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-              {game.result.toUpperCase()}
+            <div className="text-green-400">vs {opponent}</div>
+            <div className={`px-3 py-1 rounded-full ${isWinner ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+              {isWinner ? 'WIN' : 'LOSS'}
             </div>
           </div>
 
           <div className="border-t border-green-400/20 pt-4">
-            <h4 className="text-green-400 mb-2">Questions & Solutions</h4>
-            {game.questions.map((q, i) => (
-              <div key={i} className="flex justify-between items-center py-2 border-b border-green-400/10">
-                <div className="text-white">{q}</div>
-                <div className="text-green-400">{game.solutions[i]}</div>
-              </div>
-            ))}
+            <h4 className="text-green-400 mb-4">Questions & Solutions</h4>
+            <div className="space-y-2">
+              {game.questions.map((question, index) => (
+                <div key={index} className="bg-green-400/10 rounded-lg p-4">
+                  <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-6">
+                      <span className="text-green-400">Q{index + 1}:</span>
+                      <span className="text-white ml-2">{ isPlayerOne ? player1questions[index] : player2questions[index]  }</span>
+                    </div>
+                    <div className="col-span-6">
+                      <span className="text-green-400">A{index + 1}:</span>
+                      <span className="text-white ml-2">{isPlayerOne ? player1solves[index] : player2solves[index]}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </motion.div>
@@ -117,11 +156,46 @@ function GameHistoryModal({ game, onClose }) {
 
 function Test() {
   const [selectedGame, setSelectedGame] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  function getCookie(name) {
+    const cookieValue = document.cookie
+      .split('; ')
+      .find(row => row.startsWith(name + '='))
+      ?.split('=')[1];
+    return cookieValue ? decodeURIComponent(cookieValue) : "";
+  }
+
+  useEffect(() => {
+    const uid = getCookie("uid");
+    setCurrentUserId(uid || "2323"); // Use dummy ID if no cookie
+    
+    const fetchPlayerInfo = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/profile/${uid}`);
+        // Update player data with API response
+        playerData = response.data;
+        
+        // Update statistics
+        solutionsData[0].value = playerData.solves;
+        solutionsData[1].value = playerData.wrongsolves;
+        
+        const totalGames = playerData.games.length;
+        matchesData[0].value = playerData.totalwins;
+        matchesData[1].value = totalGames - playerData.totalwins;
+      } catch (error) {
+        console.error('Error fetching player info:', error);
+        // Keep using dummy data if API fails
+      }
+    };
+
+    fetchPlayerInfo();
+  }, []);
 
   return (
-    <div className='flex bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)] bg-cover bg-center '>
-      <Navbar></Navbar>
-      <div className="min-h-screen  text-white p-2 w-full">
+    <div className='flex bg-[url(https://c.animaapp.com/fOFXwWPz/img/image-10.png)] bg-cover bg-center'>
+      <Navbar />
+      <div className="min-h-screen text-white p-2 w-full">
         <div className="max-w-full mx-auto space-y-4">
           {/* Player Header */}
           <motion.div
@@ -149,22 +223,34 @@ function Test() {
             <div className="col-span-12 lg:col-span-8 space-y-4">
               {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                <StatCard icon={Clock} title="Avg. Solve Time" value={playerData.stats.avgSolveTime} />
-                <StatCard icon={Target} title="Total Solves" value={playerData.stats.totalSolves} />
-                <StatCard icon={Award} title="Accuracy" value={playerData.stats.accuracy} />
-                <StatCard icon={Target} title="Total Matches" value={playerData.stats.totalMatches} />
+                <StatCard 
+                  icon={Clock} 
+                  title="Avg. Solve Time" 
+                  value={playerData.solves + playerData.wrongsolves > 0 
+                    ? Math.round(playerData.time/(playerData.solves + playerData.wrongsolves)) 
+                    : 0} 
+                />
+                <StatCard icon={Target} title="Total Solves" value={playerData.solves} />
+                <StatCard 
+                  icon={Award} 
+                  title="Accuracy" 
+                  value={playerData.solves > 0 
+                    ? Math.round((playerData.solves / (playerData.solves + playerData.wrongsolves)) * 100) + '%'
+                    : '0%'} 
+                />
+                <StatCard icon={Trophy} title="Total Matches" value={playerData.games.length} />
               </div>
 
               {/* Rating History Graph */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className=" backdrop-blur-sm p-4 rounded-xl border border-green-400/30"
+                className="backdrop-blur-sm p-4 rounded-xl border border-green-400/30"
               >
                 <h2 className="text-lg font-bold mb-4 text-green-400">Rating History</h2>
                 <div className="h-[250px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={playerData.ratingHistory}>
+                    <LineChart data={playerData.ratings}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
                       <XAxis
                         dataKey="timestamp"
@@ -172,7 +258,7 @@ function Test() {
                         domain={['dataMin', 'dataMax']}
                         scale="time"
                         stroke="#6ee7b7"
-                        tickFormatter={(timestamp) => format(timestamp, 'MMM d, HH:mm')}
+                        tickFormatter={(timestamp) => format(new Date(timestamp), 'MMM d, HH:mm')}
                       />
                       <YAxis stroke="#6ee7b7" />
                       <Tooltip
@@ -181,7 +267,7 @@ function Test() {
                           border: '1px solid rgba(74, 222, 128, 0.3)',
                           borderRadius: '8px',
                         }}
-                        labelFormatter={(timestamp) => format(timestamp, 'PPpp')}
+                        labelFormatter={(timestamp) => format(new Date(timestamp), 'PPpp')}
                       />
                       <Line
                         type="monotone"
@@ -205,7 +291,7 @@ function Test() {
                   <h2 className="text-lg font-bold mb-2 text-green-400">Solutions Distribution</h2>
                   <div className="h-[200px]">
                     <ResponsiveContainer width="100%" height="100%">
-                      <PieChart className='text-white'>
+                      <PieChart>
                         <Pie
                           data={solutionsData}
                           cx="50%"
@@ -278,23 +364,31 @@ function Test() {
                   <h2 className="text-lg font-bold text-green-400">Recent Games</h2>
                 </div>
                 <div className="divide-y divide-green-400/20">
-                  {playerData.gameHistory.map((game) => (
-                    <motion.div
-                      key={game.id}
-                      className="p-3 hover:bg-green-400/5 cursor-pointer"
-                      onClick={() => setSelectedGame(game)}
-                      whileHover={{ x: 5 }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-2 h-2 rounded-full ${game.result === 'win' ? 'bg-green-400' : 'bg-red-400'}`} />
-                          <div className="text-white">vs {game.opponent}</div>
-                          <div className="text-gray-400 text-sm">{game.date}</div>
+                  {playerData.games.map((game) => {
+                    const isPlayerOne = game.player_one_id === currentUserId;
+                    const opponent = isPlayerOne ? game.player_two_id : game.player_one_id;
+                    const isWinner = game.winner_id === currentUserId;
+                    
+                    return (
+                      <motion.div
+                        key={game.id}
+                        className="p-3 hover:bg-green-400/5 cursor-pointer"
+                        onClick={() => setSelectedGame(game)}
+                        whileHover={{ x: 5 }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-2 h-2 rounded-full ${isWinner ? 'bg-green-400' : 'bg-red-400'}`} />
+                            <div className="text-white">vs {opponent}</div>
+                            <div className="text-gray-400 text-sm">
+                              {format(new Date(game.timestamp), 'MMM d, HH:mm')}
+                            </div>
+                          </div>
+                          <ChevronRight size={16} className="text-green-400" />
                         </div>
-                        <ChevronRight size={16} className="text-green-400" />
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </motion.div>
             </div>
@@ -303,7 +397,11 @@ function Test() {
 
         <AnimatePresence>
           {selectedGame && (
-            <GameHistoryModal game={selectedGame} onClose={() => setSelectedGame(null)} />
+            <GameHistoryModal 
+              game={selectedGame} 
+              onClose={() => setSelectedGame(null)} 
+              currentUserId={currentUserId}
+            />
           )}
         </AnimatePresence>
       </div>
