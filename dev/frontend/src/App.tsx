@@ -9,6 +9,8 @@ import Spectator from './components/gameselect/spectator';
 import LeaderBoard from './components/gameselect/leaderBoard';
 import Test from './components/gameselect/test';
 import Test2  from './components/gameselect/duelsdragdrop';
+import Practice from './components/gameselect/practice';
+import BatteRoyale from './components/gameselect/battleroyale';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path='/leaderboard' element={<LeaderBoard/>}/>
         <Route path='/profile' element={<Test/>}/>
         <Route path='/gamearea2' element={<Test2/>}/>
+        <Route path='/practice' element={<Practice/>}/>
+        <Route path='/battleroyale' element={<BatteRoyale/>}/>
       </Routes>
     </Router>
   );
