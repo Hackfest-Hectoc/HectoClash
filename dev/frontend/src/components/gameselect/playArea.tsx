@@ -167,6 +167,7 @@ export default function MathGame() {
     } else {
       console.error("WebSocket is not open.")
     }
+    setExpression("")
   }
 
   const gameInit = async (data: any) => {
@@ -390,7 +391,7 @@ const navigate = useNavigate()
                 onChange={(e) => handleExpressionChange(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    handleSubmit
+                    handleSubmit()
                   }
                 }}
               />
