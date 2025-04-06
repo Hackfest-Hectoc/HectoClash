@@ -151,12 +151,7 @@ func WebSocketHandler(c *websocket.Conn) {
 	Game.Player1Questions[count] = questions[count]
 	Game.Player2Questions[count] = questions[count]
 	gjson, _ := json.Marshal(Game)
-	err = rdb.SetXX(ctx, gid, gjson, time.Minute*10).Err()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
+	rdb.SetXX(ctx, gid, gjson, time.Minute*10).Err()
 	if err := c.WriteJSON(models.Response{Topic: "question", Message: models.Round{Number: count + 1, Question: question}}); err != nil {
 		log.Println(err)
 		return
@@ -215,11 +210,7 @@ func WebSocketHandler(c *websocket.Conn) {
 				}
 				log.Printf("%+v", Game)
 				gjson, _ := json.Marshal(Game)
-				err := rdb.SetXX(ctx, gid, gjson, time.Minute*10)
-				if err != nil {
-					log.Println("ERROR:: ", err)
-					return
-				}
+				rdb.SetXX(ctx, gid, gjson, time.Minute*10)
 				if err := c.WriteJSON(models.Response{Topic: "submitResponse", Message: true}); err != nil {
 					log.Println("ERROR: ", err)
 					log.Println("error occurred..", err)
