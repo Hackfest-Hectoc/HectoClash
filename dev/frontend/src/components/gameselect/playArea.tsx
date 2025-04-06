@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, use } from "react"
 import { useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { Input } from "../ui/input"
-import { CheckCircle2, Circle, Lock, Clock, Trophy, Zap, User, Cookie } from "lucide-react"
+import { CheckCircle2, Circle, Lock, Clock, Trophy, Zap, User, Cookie,Clipboard  } from "lucide-react"
 import axios from "axios"
 import Header from "./header"
 
@@ -34,7 +34,7 @@ export default function MathGame() {
     "player1ratingchanges": 0,
     "player2ratingchanges": 0,
     "noofrounds": 5,
-    "winner" : "",
+    "winner": "",
   })
   const [round, setRound] = useState(0)
   const [question, setQuestion] = useState("666666")
@@ -55,6 +55,12 @@ export default function MathGame() {
     return cookieValue ? decodeURIComponent(cookieValue) : "";
   }
   uid = getCookie("uid")
+  const copySpectatorLink = () => {
+    const spectatorLink = `http://localhost:5173/spectator?gid=${gameData.gid}`;
+    navigator.clipboard.writeText(spectatorLink)
+      .then(() => toast.success("Spectator link copied! 📋"))
+      .catch(() => toast.error("Failed to copy link."));
+  };
   // Initialize WebSocket connection and game data
   useEffect(() => {
 
@@ -76,6 +82,8 @@ export default function MathGame() {
           interval = setInterval(() => {
             getGameData()
           }, 100)
+
+
 
           // Initialize rounds history
 
@@ -293,7 +301,7 @@ export default function MathGame() {
       </div>
     </motion.div>
   )
-const navigate = useNavigate()
+  const navigate = useNavigate()
 
   return (
 
@@ -302,12 +310,12 @@ const navigate = useNavigate()
         isOpen={showGameCompleteModal}
         onClose={() => setShowGameCompleteModal(false)}
         player1={{ username: player1.username, rating: player1.rating, uid: player1.uid, ratingChange: gameData.player1ratingchanges }}
-        player2={{username: player2.username, rating: player2.rating, uid: player2.uid, ratingChange: gameData.player2ratingchanges }}
+        player2={{ username: player2.username, rating: player2.rating, uid: player2.uid, ratingChange: gameData.player2ratingchanges }}
         winner={gameData.winner}
         uid={uid}
         navigate={navigate}
         page="gamearea"
-        
+
       />
       {/* Logo and Header */}
       <img
@@ -383,10 +391,10 @@ const navigate = useNavigate()
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          <motion.div className="w-full" whileHover={{ scale: 1.02 }}>
+          <motion.div className="w-full flex justify-center gap-2 items-center" whileHover={{ scale: 1.02 }}>
             <div className="relative">
               <Input
-                className="text-center w-full h-[50px] rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400 text-white text-xl bg-black/50 border-white"
+                className="text-center w-[360px] pl-4 ml-24 mr-10 h-[50px] rounded-lg focus:ring-2 focus:ring-green-400 focus:border-green-400 text-white text-xl bg-black/50 border-white"
                 placeholder="Type your Expression..."
                 value={expression}
                 onChange={(e) => handleExpressionChange(e.target.value)}
@@ -397,6 +405,14 @@ const navigate = useNavigate()
                 }}
               />
             </div>
+            <div className="flex justify-center mt-2">
+          <button
+            onClick={copySpectatorLink}
+            className="px-4 py-2 text-sm font-semibold bg-gray-400 text-black rounded-full hover:bg-green-500 transition-all"
+          >
+            <Clipboard></Clipboard>
+          </button>
+        </div>
           </motion.div>
           <motion.div className="w-full flex justify-center mt-4" whileHover={{ scale: 1.02 }}>
             <button
@@ -408,6 +424,8 @@ const navigate = useNavigate()
             </button>
           </motion.div>
         </motion.div>
+
+
 
         {/* Game History Section */}
         <div className="w-full max-w-4xl mt-8 mb-8">
@@ -431,10 +449,10 @@ const navigate = useNavigate()
                     animate={{ opacity: 1 }}
                     transition={{ delay: index * 0.1 }}
                     className={`grid grid-cols-[1fr_1fr_1fr] gap-4 items-center p-3 ${index === round
-                        ? "bg-green-900/20 border-l-4 border-l-green-500"
-                        : index < round
-                          ? "bg-black/40"
-                          : "bg-black/20"
+                      ? "bg-green-900/20 border-l-4 border-l-green-500"
+                      : index < round
+                        ? "bg-black/40"
+                        : "bg-black/20"
                       }`}
                   >
                     <div className="flex items-center gap-3">
